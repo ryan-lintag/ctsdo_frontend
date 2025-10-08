@@ -1,0 +1,87 @@
+/* Animations and styles for sidebar items */
+.modern-light-sidebar .sb-item{
+  position: relative;
+  display: block;
+  border-radius: 10px;
+  transition: transform 180ms ease, box-shadow 200ms ease, background-color 180ms ease;
+  padding: 0;
+  will-change: transform;
+}
+
+.modern-light-sidebar .sb-item > *{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-left: 2px;
+  border-radius: 8px;
+  color: #111827; /* primary text */
+  background: transparent;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+/* ensure CDB's internal menu item occupies full width */
+.modern-light-sidebar .cdb-sidebar-menu-item,
+.modern-light-sidebar .cdb-sidebar-menu-item > *{
+  display: block !important;
+  width: 100% !important;
+}
+
+.modern-light-sidebar .sb-item:hover > *{
+  transform: translateX(6px) scale(1.01);
+  box-shadow: 0 12px 34px rgba(2,6,23,0.08);
+  background: linear-gradient(90deg, rgba(74, 77, 248, 0.3), rgba(54, 235, 162, 0.06));
+}
+
+.modern-light-sidebar .sb-item.active::before{
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  background: linear-gradient(180deg, #6366f1, #6ee7b7);
+  border-radius: 4px;
+}
+
+.modern-light-sidebar .sb-item.active > *{
+  background: linear-gradient(90deg, rgba(99,102,241,0.08), rgba(110,231,183,0.04));
+  box-shadow: inset 0 0 0 1px rgba(99,102,241,0.04);
+  color: #0f1724;
+  transform: none;
+}
+
+/* subtle icon lift */
+.modern-light-sidebar .sb-item i,
+.modern-light-sidebar .sb-item > * i{
+  transition: transform 160ms ease, color 160ms ease;
+}
+.modern-light-sidebar .sb-item:hover i,
+.modern-light-sidebar .sb-item:hover > * i{
+  transform: translateY(-2px);
+}
+.modern-light-sidebar .sb-item.active i,
+.modern-light-sidebar .sb-item.active > * i{
+  color: #4f46e5;
+}
+
+/* pointer cursor and focus styles */
+.modern-light-sidebar .sb-item,
+.modern-light-sidebar .sb-item .cdb-sidebar-menu-item{
+  cursor: pointer;
+}
+.modern-light-sidebar .sb-item:focus-within .cdb-sidebar-menu-item{
+  box-shadow: 0 8px 26px rgba(79,70,229,0.06);
+}
+
+/* logout button hover */
+.modern-light-sidebar .sidebar-btn-wrapper button:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(15,23,42,0.06);
+}
+
+/* make input focus glow */
+.modern-light-sidebar input:focus{
+  box-shadow: 0 6px 20px rgba(79,70,229,0.08);
+  outline: none;
+}

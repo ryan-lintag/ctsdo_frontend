@@ -1,0 +1,36 @@
+/* Navigation hover and active animations */
+.navbar .nav-link{
+  position: relative;
+  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease, color 160ms ease, background-color 200ms ease;
+  border-radius: 8px;
+  padding: .45rem .8rem;
+  color: rgba(15,23,36,0.9);
+}
+
+.navbar .nav-link:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+  background: linear-gradient(90deg, rgba(99,102,241,0.06), rgba(110,231,183,0.03));
+  color: #0f1724 !important;
+}
+
+.navbar .nav-link.active{
+  background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(110,231,183,0.06));
+  box-shadow: inset 0 0 0 1px rgba(99,102,241,0.04);
+  color: #0f1724 !important;
+  font-weight: 600;
+}
+
+/* underline removed - hover retains lift and background */
+
+/* keyboard focus state */
+.navbar .nav-link:focus{
+  outline: none;
+  box-shadow: 0 8px 24px rgba(79,70,229,0.07);
+}
+
+/* keep spacing consistent on mobile collapse */
+@media (max-width: 767px){
+  .navbar .nav-link{ display:block; width:100%; padding: .6rem 1rem }
+  .navbar .nav-link::after{ left: 20px; right: 20px }
+}
