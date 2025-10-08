@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Button, Form, Card, Row, Col, Spinner } from "react-bootstrap";
 import { DashboardComponent } from '../../../components/DashboardComponent';
+import { postReq, putReq } from "../../../lib/axios";
 
 const AdminPageSettings = () => {
   const [settings, setSettings] = useState(null);
@@ -9,9 +9,8 @@ const AdminPageSettings = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
-      .then((res) => setSettings(res.data))
+    getReq(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
+      .then((data) => setSettings(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
@@ -25,7 +24,7 @@ const AdminPageSettings = () => {
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
 
-    const res = await axios.post(
+    const res = await postReq(
       `${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings/upload`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
@@ -37,7 +36,7 @@ const AdminPageSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`, settings);
+    await putReq(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`, settings);
     setSaving(false);
     alert("Homepage settings updated!");
   };

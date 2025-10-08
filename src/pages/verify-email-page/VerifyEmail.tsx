@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getReq } from '../../lib/axios';
 
 const VerifyEmail = () => {
   const { token } = useParams<{ token: string }>();
@@ -11,7 +11,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/verify-email/${token}`);
+        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/auth/verify-email/${token}`);
         // If response is an object like { message: "..." }
         setMessage(response.data?.message || 'Verification successful');
         setStatus('success');

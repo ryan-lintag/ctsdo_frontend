@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { ContentWrapper } from '../../components/ContentWrapper';
+import { getReq } from '../../lib/axios';
 
 // Define the FAQ type
 interface Faq {
@@ -16,7 +16,7 @@ const FaqSection: React.FC = () => {
   useEffect(() => {
     const fetchFaqs = async (): Promise<void> => {
       try {
-        const response = await axios.get<Faq[]>(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`);
+        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`);
         setFaqs(response.data);
       } catch (error) {
         console.error('Failed to fetch FAQs:', error);

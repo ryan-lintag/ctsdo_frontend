@@ -1,10 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import { postReq } from '../../lib/axios';
 
-interface ApiResponse {
-  message: string;
-}
 
 const ResetPassword: React.FC = () => {
   const { token } = useParams(); // No need for generic typing
@@ -24,7 +22,7 @@ const ResetPassword: React.FC = () => {
     }
 
     try {
-      const res = await axios.post<ApiResponse>(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
+      const res = await postReq(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
         { newPassword }
       );
       setMessage(res.data.message);

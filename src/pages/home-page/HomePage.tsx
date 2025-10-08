@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import axios from "axios";
 import HeaderContent from "../../components/HeaderContent";
 import { ContentWrapper } from "../../components/ContentWrapper";
+import { getReq } from "../../lib/axios";
 
 const HomePage = () => {
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
-      .then(res => setSettings(res.data))
+    getReq(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
+      .then(data => setSettings(data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);

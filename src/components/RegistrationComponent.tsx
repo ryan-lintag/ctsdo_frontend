@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Form, Row, Col, Alert, Button, Accordion } from "react-bootstrap";
-import { postReq } from "../lib/axios";
+import { getReq, postReq } from "../lib/axios";
 import { AccordionItemComponent } from "../components/AccordionItemComponent";
 import { useUserStore } from "../store/useUserStore";
 import { useLocation } from "react-router-dom";
@@ -176,7 +175,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
   const fetchRegistrationById = async (id: string) => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/registrations/${id}`);
+      const res = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/registrations/${id}`);
       return res.data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
@@ -187,7 +186,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/courses`);
+      const res = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/courses`);
       setCourses(res.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
