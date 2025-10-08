@@ -9,7 +9,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/homepage-settings")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
       .then(res => setSettings(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));

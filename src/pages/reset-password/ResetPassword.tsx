@@ -24,8 +24,7 @@ const ResetPassword: React.FC = () => {
     }
 
     try {
-      const res = await axios.post<ApiResponse>(
-        `http://localhost:3000/auth/reset-password/${token}`,
+      const res = await axios.post<ApiResponse>(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
         { newPassword }
       );
       setMessage(res.data.message);

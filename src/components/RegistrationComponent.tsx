@@ -176,9 +176,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
   const fetchRegistrationById = async (id: string) => {
     try {
-      const res = await axios.get(
-        `http://localhost:3000/api/registrations/${id}`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/registrations/${id}`);
       return res.data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
@@ -189,7 +187,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await axios.get("http://localhost:3000/api/courses");
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/courses`);
       setCourses(res.data);
     } catch (error) {
       console.error("Error fetching courses:", error);

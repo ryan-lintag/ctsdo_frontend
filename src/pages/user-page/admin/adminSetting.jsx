@@ -10,7 +10,7 @@ const AdminPageSettings = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/homepage-settings")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
       .then((res) => setSettings(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -26,7 +26,7 @@ const AdminPageSettings = () => {
     formData.append("file", e.target.files[0]);
 
     const res = await axios.post(
-      "http://localhost:3000/api/homepage-settings/upload",
+      `${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings/upload`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );
@@ -37,7 +37,7 @@ const AdminPageSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    await axios.put("http://localhost:3000/api/homepage-settings", settings);
+    await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`, settings);
     setSaving(false);
     alert("Homepage settings updated!");
   };
@@ -129,7 +129,7 @@ const AdminPageSettings = () => {
                     />
                     {settings.headerImage && (
                       <img
-                        src={`http://localhost:3000${settings.headerImage}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL}${settings.headerImage}`}
                         alt="Header Preview"
                         className="img-fluid rounded mt-2 shadow-sm"
                       />
@@ -146,7 +146,7 @@ const AdminPageSettings = () => {
                     />
                     {settings.enrollmentStepsImage && (
                       <img
-                        src={`http://localhost:3000${settings.enrollmentStepsImage}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL}${settings.enrollmentStepsImage}`}
                         alt="Steps Preview"
                         className="img-fluid rounded mt-2 shadow-sm"
                       />

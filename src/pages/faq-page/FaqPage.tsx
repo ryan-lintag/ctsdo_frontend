@@ -16,7 +16,7 @@ const FaqSection: React.FC = () => {
   useEffect(() => {
     const fetchFaqs = async (): Promise<void> => {
       try {
-        const response = await axios.get<Faq[]>('http://localhost:3000/api/faqs');
+        const response = await axios.get<Faq[]>(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`);
         setFaqs(response.data);
       } catch (error) {
         console.error('Failed to fetch FAQs:', error);
