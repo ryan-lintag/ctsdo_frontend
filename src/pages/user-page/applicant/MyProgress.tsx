@@ -113,7 +113,7 @@ const MyProgress: React.FC = () => {
                     </p>
                     <p>
                       <strong>Entry Date:</strong>{' '}
-                      {reg.entryDate ? FormatDate(reg.entryDate) : 'N/A'}
+                      {reg.entryDate ? FormatDate(new Date(reg.entryDate)) : 'N/A'}
                     </p>
                     {reg.feedback && (
                       <p className="text-danger">

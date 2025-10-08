@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner, Alert, Container } from 'react-bootstrap';
+import { Spinner, Alert } from 'react-bootstrap';
 import { useUserStore } from '../../../store/useUserStore';
 import { getReq, putReq } from '../../../lib/axios';
 import { PortfolioComponent } from '../../../components/PortfolioComponent';

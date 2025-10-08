@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet } from 'react-router-dom';
 
 const PrivateRoutes = () => {
-    const [accessToken, setAccessToken] = useState('');
+    // const [accessToken, setAccessToken] = useState('');
 
     useEffect(() => {
         async function authenticate() {

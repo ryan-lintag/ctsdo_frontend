@@ -52,7 +52,6 @@ const ResumeComponentFirst: React.FC<ResumeComponentProps> = ({ data }) => {
     const pdf = new jsPDF("p", "mm", "a4");
 
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
     const imgProps = pdf.getImageProperties(imgData);
 
     const pdfWidth = pageWidth;

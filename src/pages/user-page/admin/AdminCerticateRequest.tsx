@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DashboardComponent } from "../../../components/DashboardComponent";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import TableComponent from "../../../components/TableComponent";
 import { deleteReq, getReq, postReq, putReq } from "../../../lib/axios";
 import { Button as PrimeButton } from "primereact/button";
@@ -29,7 +29,7 @@ const AdminCerticateRequest: React.FC = () => {
     setIsLoading(true);
     try {
       let data = await getReq("/api/certificates");
-      data = data.map((c) => {
+      data = data.map((c: Certificate) => {
         return {
           ...c,
           fullName: `${c.firstName} ${c.lastName}`,
@@ -242,7 +242,7 @@ const AdminCerticateRequest: React.FC = () => {
           />
           {certificate && (
             <span>
-              Are you sure you want to delete <b>{certificate.title}</b>?
+              Are you sure you want to delete <b>{certificate.courseTitle}</b>?
             </span>
           )}
         </div>

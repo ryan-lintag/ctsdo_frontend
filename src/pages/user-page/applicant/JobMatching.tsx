@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DashboardComponent } from '../../../components/DashboardComponent';
 import { getReq, postReq } from '../../../lib/axios';
 import { useUserStore } from '../../../store/useUserStore';
-import { Alert, Spinner, Card, Badge, Button, Row, Col, ListGroup } from 'react-bootstrap';
+import { Alert, Spinner } from 'react-bootstrap';
 
 interface Message {
   from: 'user' | 'assistant';
@@ -37,13 +37,12 @@ interface SearchSuggestion {
 
 const JobMatchingAI: React.FC = () => {
   const { userProfile } = useUserStore();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [userInput, setUserInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [_messages, setMessages] = useState<Message[]>([]);
+  const [_isLoading, setIsLoading] = useState(false);
   const [completedCourses, setCompletedCourses] = useState<CompletedCourse[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<string>('');
-  const [jobOpportunities, setJobOpportunities] = useState<JobOpportunity[]>([]);
-  const [searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion | null>(null);
+  const [selectedCourse, _setSelectedCourse] = useState<string>('');
+  const [_jobOpportunities, setJobOpportunities] = useState<JobOpportunity[]>([]);
+  const [_searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usingChatGPT, setUsingChatGPT] = useState(false);
@@ -165,47 +164,47 @@ const JobMatchingAI: React.FC = () => {
     }
   };
 
-  // Handle user message send
-  const handleSend = async () => {
-    if (!userInput.trim() || isLoading) return;
+  // // Handle user message send
+  // const handleSend = async () => {
+  //   if (!userInput.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      from: 'user',
-      text: userInput,
-      timestamp: new Date()
-    };
+  //   const userMessage: Message = {
+  //     from: 'user',
+  //     text: userInput,
+  //     timestamp: new Date()
+  //   };
 
-    setMessages(prev => [...prev, userMessage]);
-    const query = userInput;
-    setUserInput('');
+  //   setMessages(prev => [...prev, userMessage]);
+  //   const query = userInput;
+  //   setUserInput('');
 
-    await searchJobsWithChatGPT(completedCourses, query, false);
-  };
+  //   await searchJobsWithChatGPT(completedCourses, query, false);
+  // };
 
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // // Handle Enter key press
+  // const handleKeyPress = (e: React.KeyboardEvent) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     handleSend();
+  //   }
+  // };
 
-  // Open job search in new tab
-  const openJobSearch = (website: { name: string; url: string; searchUrl?: string }) => {
-    const urlToOpen = website.searchUrl || website.url;
-    window.open(urlToOpen, '_blank');
-  };
+  // // Open job search in new tab
+  // const openJobSearch = (website: { name: string; url: string; searchUrl?: string }) => {
+  //   const urlToOpen = website.searchUrl || website.url;
+  //   window.open(urlToOpen, '_blank');
+  // };
 
-  // Apply to specific job
-  const applyToJob = (job: JobOpportunity) => {
-    if (job.applicationLink && job.applicationLink.startsWith('http')) {
-      window.open(job.applicationLink, '_blank');
-    } else {
-      // If no direct link, open company search on JobStreet
-      const searchUrl = `https://www.jobstreet.com.ph/jobs?keywords=${encodeURIComponent(job.company + ' ' + job.title)}`;
-      window.open(searchUrl, '_blank');
-    }
-  };
+  // // Apply to specific job
+  // const applyToJob = (job: JobOpportunity) => {
+  //   if (job.applicationLink && job.applicationLink.startsWith('http')) {
+  //     window.open(job.applicationLink, '_blank');
+  //   } else {
+  //     // If no direct link, open company search on JobStreet
+  //     const searchUrl = `https://www.jobstreet.com.ph/jobs?keywords=${encodeURIComponent(job.company + ' ' + job.title)}`;
+  //     window.open(searchUrl, '_blank');
+  //   }
+  // };
 
 useEffect(() => {
   if (selectedCourse) {

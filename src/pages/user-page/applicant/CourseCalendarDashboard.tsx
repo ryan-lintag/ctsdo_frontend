@@ -6,14 +6,14 @@ import type { Course } from '../../../types/common.types';
 import { CourseCalendar } from '../../../components/CourseCalendar';
 import { DashboardComponent } from '../../../components/DashboardComponent';
 
-interface EnrolledCourse extends Course {
+interface EnrolledCourse extends Omit<Course, 'status'> {
   registrationDate?: Date;
   status?: 'In Progress' | 'Completed' | 'Cancelled';
 }
 
 const CourseCalendarDashboard: React.FC = () => {
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
-  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [_allCourses, setAllCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -180,7 +180,7 @@ const CourseCalendarDashboard: React.FC = () => {
             <Card.Header>
             </Card.Header>
             <Card.Body>
-              <CourseCalendar courses={enrolledCourses} />
+              <CourseCalendar courses={enrolledCourses.map(({ status, registrationDate, ...course }) => course)} />
             </Card.Body>
           </Card>
 

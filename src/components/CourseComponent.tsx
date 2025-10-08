@@ -1,5 +1,3 @@
-import { CDBIcon } from "cdbreact";
-import { Card, Col, Container, Row } from "react-bootstrap";
 import type { Course } from "../types/common.types";
 import { useState } from "react";
 

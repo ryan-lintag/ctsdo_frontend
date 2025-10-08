@@ -9,7 +9,19 @@ import { FormatDate } from '../../../lib/formatter';
 import { CourseComponent } from '../../../components/CourseComponent';
 import type { Course } from '../../../types/common.types';
 
-const COURSE_DEFAULT = { _id: '', title: '', description: '' }
+const COURSE_DEFAULT: Course = {
+  name: '',
+  _id: '',
+  title: '',
+  description: '',
+  imageUrl: '',
+  quota: 0,
+  status: 0,
+  instructor: '',
+  startDate: undefined,
+  endDate: undefined,
+  currentEnrolled: 0
+}
 
 const AdminCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -25,7 +37,7 @@ const AdminCourses: React.FC = () => {
     setIsLoading(true);
     try {
       let data = await getReq('/api/courses');
-      data = data.map(c => ({
+      data = data.map((c: Course) => ({
         ...c,
         statusStr: c.status == 0 ? 'Inactive' : 'Active',
         startDateStr: FormatDate(c.startDate),

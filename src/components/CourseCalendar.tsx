@@ -17,7 +17,6 @@ interface CalendarTileProps {
 
 export const CourseCalendar: React.FC<CourseCalendarProps> = ({
   courses,
-  selectedCourse,
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [coursesForDate, setCoursesForDate] = useState<Course[]>([]);
@@ -37,16 +36,16 @@ export const CourseCalendar: React.FC<CourseCalendarProps> = ({
   }, [selectedDate, courses]);
 
   // Function to determine if a date has courses
-  const hasCoursesOnDate = (date: Date): boolean => {
-    return courses.some((course) => {
-      if (!course.startDate || !course.endDate) return false;
+  // const hasCoursesOnDate = (date: Date): boolean => {
+  //   return courses.some((course) => {
+  //     if (!course.startDate || !course.endDate) return false;
 
-      const startDate = new Date(course.startDate);
-      const endDate = new Date(course.endDate);
+  //     const startDate = new Date(course.startDate);
+  //     const endDate = new Date(course.endDate);
 
-      return date >= startDate && date <= endDate;
-    });
-  };
+  //     return date >= startDate && date <= endDate;
+  //   });
+  // };
 
   // Function to get course status for a date
   const getCourseStatusForDate = (

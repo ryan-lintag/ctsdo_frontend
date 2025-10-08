@@ -80,15 +80,19 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
 
   const generateCertificate = (formData: Certificate) => {
     // Capture the content of the div as a canvas
-    html2canvas(divRef.current)
-      .then((canvas) => {
-        // Convert the canvas to a Base64 string
-        formData.certificate = canvas.toDataURL();
-        submitCallback(formData);
-      })
-      .catch((error) => {
-        console.error("Error capturing the div:", error);
-      });
+    if (divRef.current) {
+      html2canvas(divRef.current as HTMLElement)
+        .then((canvas) => {
+          // Convert the canvas to a Base64 string
+          formData.certificate = canvas.toDataURL();
+          submitCallback(formData);
+        })
+        .catch((error) => {
+          console.error("Error capturing the div:", error);
+        });
+    } else {
+      console.error("divRef.current is null, cannot generate certificate.");
+    }
   };
 
   const handleInputChange = async (

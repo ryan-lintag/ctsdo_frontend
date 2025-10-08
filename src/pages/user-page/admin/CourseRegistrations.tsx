@@ -4,7 +4,7 @@ import { Row, Col, Button as BSButton, Alert, Badge, ButtonGroup } from 'react-b
 import { Dialog } from 'primereact/dialog';
 import { Button as PrimeButton } from 'primereact/button';
 import { LoaderBoundary } from '../../../components/LoaderBoundary';
-import { deleteReq, getReq, putReq } from '../../../lib/axios';
+import { getReq, putReq } from '../../../lib/axios';
 import { FormatDate } from '../../../lib/formatter';
 import TableComponent from '../../../components/TableComponent';
 import { RegistrationForm, type RegistrationData } from '../../../components/RegistrationComponent';
@@ -97,22 +97,22 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
     }
   }, [success, error]);
 
-  const handleDelete = async () => {
-    if (!selectedRegistration?._id) return;
-    setIsLoading(true);
-    try {
-      await deleteReq(`/api/registration/${selectedRegistration._id}`);
-      setSuccess('Registration deleted successfully!');
-      setRejectDialog(false);
-      setSelectedRegistration(null);
-      await fetchRegistrations(); // Refresh the list
-    } catch (err) {
-      console.error('Failed to delete registration:', err);
-      setError('Failed to delete registration');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (!selectedRegistration?._id) return;
+  //   setIsLoading(true);
+  //   try {
+  //     await deleteReq(`/api/registration/${selectedRegistration._id}`);
+  //     setSuccess('Registration deleted successfully!');
+  //     setRejectDialog(false);
+  //     setSelectedRegistration(null);
+  //     await fetchRegistrations(); // Refresh the list
+  //   } catch (err) {
+  //     console.error('Failed to delete registration:', err);
+  //     setError('Failed to delete registration');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const submitRegistration = async (data: RegistrationData) => {
     if (!selectedRegistration?._id) return;
@@ -257,7 +257,7 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
 
   // Date template for table
   const dateBodyTemplate = (registration: RegistrationData) => {
-    return FormatDate(registration.entryDate);
+    return FormatDate(registration.entryDate ? new Date(registration.entryDate) : undefined);
   };
 
   const tableColumns = [
@@ -433,16 +433,16 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
           <div className="table-responsive">
             <table className="table table-striped">
               <tbody>
-                <tr><th width="200">Status</th><td>{getStatusBadge(selectedRegistration)}</td></tr>
+                <tr><th style={{ width: '200px' }}>Status</th><td>{getStatusBadge(selectedRegistration)}</td></tr>
                 <tr><th>ULI Number</th><td>{selectedRegistration.uliNumber}</td></tr>
-                <tr><th>Entry Date</th><td>{FormatDate(selectedRegistration.entryDate)}</td></tr>
+                <tr><th>Entry Date</th><td>{FormatDate(selectedRegistration.entryDate ? new Date(selectedRegistration.entryDate) : undefined)}</td></tr>
                 <tr><th>Full Name</th><td>{`${selectedRegistration.firstName} ${selectedRegistration.middleName || ''} ${selectedRegistration.lastName}`}</td></tr>
                 <tr><th>Extension Name</th><td>{selectedRegistration.extensionName || 'N/A'}</td></tr>
                 <tr><th>Email</th><td>{selectedRegistration.email}</td></tr>
                 <tr><th>Contact</th><td>{selectedRegistration.contactNumber}</td></tr>
                 <tr><th>Facebook</th><td>{selectedRegistration.facebook}</td></tr>
                 <tr><th>Address</th><td>{`${selectedRegistration.address.street}, ${selectedRegistration.address.barangay}, ${selectedRegistration.address.district}, ${selectedRegistration.address.city}, ${selectedRegistration.address.province}, ${selectedRegistration.address.region}`}</td></tr>
-                <tr><th>Date of Birth</th><td>{FormatDate(selectedRegistration.dob)}</td></tr>
+                <tr><th>Date of Birth</th><td>{FormatDate(selectedRegistration.dob ? new Date(selectedRegistration.dob) : undefined)}</td></tr>
                 <tr><th>Birth Place</th><td>{`${selectedRegistration.birthPlace.city}, ${selectedRegistration.birthPlace.province}, ${selectedRegistration.birthPlace.region}`}</td></tr>
                 <tr><th>Nationality</th><td>{selectedRegistration.nationality}</td></tr>
                 <tr><th>Sex</th><td>{selectedRegistration.sex}</td></tr>
@@ -457,8 +457,8 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
                 <tr><th>Course</th><td>{getCourseTitle(selectedRegistration.courseId)}</td></tr>
                 <tr><th>Scholarship Type</th><td>{selectedRegistration.scholarshipType || 'N/A'}</td></tr>
                 <tr><th>Privacy Agreement</th><td>{selectedRegistration.privacyAgreement ? 'Agreed' : 'Not Agreed'}</td></tr>
-                <tr><th>Date Accomplished</th><td>{FormatDate(selectedRegistration.dateAccomplished)}</td></tr>
-                <tr><th>Date Received</th><td>{FormatDate(selectedRegistration.dateReceived)}</td></tr>
+                <tr><th>Date Accomplished</th><td>{FormatDate(selectedRegistration.dateAccomplished ? new Date(selectedRegistration.dateAccomplished) : undefined)}</td></tr>
+                <tr><th>Date Received</th><td>{FormatDate(selectedRegistration.dateReceived ? new Date(selectedRegistration.dateReceived) : undefined)}</td></tr>
                 {selectedRegistration.feedback && (
                   <tr><th>Rejection Feedback</th><td className="text-danger">{selectedRegistration.feedback}</td></tr>
                 )}
@@ -517,7 +517,7 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
                       <strong>Applicant Signature</strong>
                       <br />
                       <img 
-                        src={selectedRegistration.applicantSignature as string} 
+                        src={selectedRegistration.applicantSignature as unknown as string} 
                         alt="Applicant Signature" 
                         className="img-thumbnail" 
                         style={{ maxWidth: '150px', maxHeight: '150px' }}

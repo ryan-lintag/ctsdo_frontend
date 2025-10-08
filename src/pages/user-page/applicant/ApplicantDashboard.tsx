@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
   const [allCourses, setAllCourses] = useState<CourseWithFormattedDates[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'available' | 'calendar'>('available');
+  const [activeTab, _setActiveTab] = useState<'available' | 'calendar'>('available');
   const [courseFilter, setCourseFilter] = useState<'all' | 'available' | 'upcoming' | 'expired'>('available');
   const navigate = useNavigate();
 

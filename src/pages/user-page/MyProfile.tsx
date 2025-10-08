@@ -1,19 +1,8 @@
-import React, { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import React, { useState, type ChangeEvent, type FormEvent } from 'react';
 import { DashboardComponent } from '../../components/DashboardComponent';
 import { putReq } from '../../lib/axios';
 import { useUserStore } from '../../store/useUserStore';
 import type { UserProfile } from '../../types/common.types';
-
-const USER_PROFILE_DEFAULT: UserProfile = {
-  _id: '',
-  email: '',
-  role: '',
-  firstName: '',
-  middleName: '',
-  lastName: '',
-  dateOfBirth: new Date(),
-  status: 0
-}
 
 const MyProfile: React.FC = () => {
   const userProfile = useUserStore((state) => state.userProfile)

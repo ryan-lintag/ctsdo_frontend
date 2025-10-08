@@ -3,8 +3,21 @@ import axios from "axios";
 import { Button, Form, Card, Row, Col, Spinner } from "react-bootstrap";
 import { DashboardComponent } from '../../../components/DashboardComponent';
 
+interface HomepageSettings {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  aboutTitle?: string;
+  aboutDescription?: string;
+  aboutButtonText?: string;
+  aboutButtonLink?: string;
+  headerImage?: string;
+  enrollmentStepsImage?: string;
+  googleMapEmbed?: string;
+  [key: string]: any;
+}
+
 const AdminPageSettings = () => {
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState<HomepageSettings>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -16,14 +29,22 @@ const AdminPageSettings = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleChange = (e) => {
-    setSettings({ ...settings, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target as HTMLInputElement;
+    setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileUpload = async (e, field) => {
-    if (!e.target.files) return;
+  const handleFileUpload = async (
+    e: React.ChangeEvent<any>,
+    field: keyof HomepageSettings
+  ) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
     const formData = new FormData();
-    formData.append("file", e.target.files[0]);
+    formData.append("file", file);
 
     const res = await axios.post(
       "http://localhost:3000/api/homepage-settings/upload",
@@ -31,15 +52,21 @@ const AdminPageSettings = () => {
       { headers: { "Content-Type": "multipart/form-data" } }
     );
 
-    setSettings({ ...settings, [field]: res.data.url });
+    setSettings((prev) => ({ ...prev, [field]: res.data.url }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    await axios.put("http://localhost:3000/api/homepage-settings", settings);
-    setSaving(false);
-    alert("Homepage settings updated!");
+    try {
+      await axios.put("http://localhost:3000/api/homepage-settings", settings);
+      alert("Homepage settings updated!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update settings");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -129,7 +156,7 @@ const AdminPageSettings = () => {
                     />
                     {settings.headerImage && (
                       <img
-                        src={`http://localhost:3000${settings.headerImage}`}
+                        src={settings.headerImage.startsWith("http") ? settings.headerImage : `http://localhost:3000${settings.headerImage}`}
                         alt="Header Preview"
                         className="img-fluid rounded mt-2 shadow-sm"
                       />
@@ -140,13 +167,11 @@ const AdminPageSettings = () => {
                     <Form.Label>Enrollment Steps Image</Form.Label>
                     <Form.Control
                       type="file"
-                      onChange={(e) =>
-                        handleFileUpload(e, "enrollmentStepsImage")
-                      }
+                      onChange={(e) => handleFileUpload(e, "enrollmentStepsImage")}
                     />
                     {settings.enrollmentStepsImage && (
                       <img
-                        src={`http://localhost:3000${settings.enrollmentStepsImage}`}
+                        src={settings.enrollmentStepsImage.startsWith("http") ? settings.enrollmentStepsImage : `http://localhost:3000${settings.enrollmentStepsImage}`}
                         alt="Steps Preview"
                         className="img-fluid rounded mt-2 shadow-sm"
                       />
@@ -157,7 +182,7 @@ const AdminPageSettings = () => {
   <Form.Label>Google Map Embed</Form.Label>
   <Form.Control
     name="googleMapEmbed"
-    value={settings.googleMapEmbed}
+    value={settings.googleMapEmbed || ""}
     readOnly
   />
 </Form.Group>

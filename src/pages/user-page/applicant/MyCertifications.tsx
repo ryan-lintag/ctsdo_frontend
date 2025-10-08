@@ -21,13 +21,13 @@ const MyCertifications: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [completedCourses, setCompletedCourses] = useState<any[]>([]);
   const [deleteCertificateDialog, setDeleteCertificateDialog] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const fetchCertificates = async () => {
     setIsLoading(true);
     try {
       let data = await getReq('/api/certificates/user');
-      data = data.map(c => {
+      data = data.map((c: Certificate) => {
         return {
           ...c,
           requestDateStr: FormatDate(c.requestDate)

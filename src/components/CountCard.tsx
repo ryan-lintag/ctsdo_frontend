@@ -1,5 +1,5 @@
 import { CDBIcon } from 'cdbreact';
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 
 interface CountCardProps {
   icon: string

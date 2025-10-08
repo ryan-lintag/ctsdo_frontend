@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { UserProfile } from '../types/common.types'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 
 const USER_PROFILE_DEFAULT: UserProfile = {
     _id: '',
@@ -21,7 +21,7 @@ type StoreType = {
 }
 export const useUserStore = create<StoreType>()(
     persist(
-        (set, get) => ({
+        (set, _get) => ({
             userProfile: USER_PROFILE_DEFAULT,
             isLoading: true,
             setLoggedInUser: (userProfile: UserProfile) => set({ userProfile }),

@@ -1,5 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import axios from 'axios';
+import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useUserStore } from '../../store/useUserStore';

@@ -138,3 +138,23 @@ export interface RegistrationData {
   isApproved?: boolean;
   feedback?: string;
 }
+
+export interface Student {
+  _id: string;
+  userId: string;
+  courseId: string;
+  status: string;
+  name?: string; // full name for display
+  courseTitle?: string; // course title for display
+}
+
+export interface User {
+  _id: string;
+  email: string;
+  role: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  dateOfBirth: Date;
+  status: number;
+}

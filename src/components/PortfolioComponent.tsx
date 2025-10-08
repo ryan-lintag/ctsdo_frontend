@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import {
-  Card,
   Button,
   Badge,
   Row,
@@ -13,7 +12,6 @@ import {
 import {
   FaDownload,
   FaEdit,
-  FaEye,
   FaLinkedin,
   FaGithub,
   FaFacebook,
@@ -25,7 +23,6 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import type { Portfolio, SocialLink } from "../types/common.types";
-import { FormatDate } from "../lib/formatter";
 import "./Portfolio.css";
 import ResumeComponent from "./ResumeComponent";
 
