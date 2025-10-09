@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Form, Row, Col, Alert, Button, Accordion } from "react-bootstrap";
 import { getReq, postReq } from "../lib/axios";
 import { AccordionItemComponent } from "../components/AccordionItemComponent";
@@ -145,7 +144,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const location = useLocation();
   const preselectedCourseId = location.state?.preselectedCourseId;
   const { userProfile } = useUserStore();
-  const [formData, setFormData] = useState<RegistrationData[]>([]);
+  const [_formData, setFormData] = useState<RegistrationData[]>([]);
   const [newFormData, setNewFormData] = useState<NewRegistrationData>({
     ...defaultFormData,
     firstName: userProfile.firstName,
@@ -558,7 +557,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 <Form.Group controlId="formFileMultiple" className="mb-3">
                   <Form.Label>ID Picture</Form.Label>
                   {renderImagePreview(
-                    registration?.idPicture,
+                    registration?.idPicture ?? null,
                     "Current ID Picture"
                   )}
                   <Form.Control
@@ -1091,7 +1090,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                         >
                           <Form.Label>Applicant Signature</Form.Label>
                           {renderImagePreview(
-                            registration?.applicantSignature as string,
+                            registration?.applicantSignature as unknown as string,
                             "Current Applicant Signature"
                           )}
                           <Form.Control
@@ -1123,7 +1122,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             1x1 picture taken within the last 6 months
                           </Form.Label>
                           {renderImagePreview(
-                            registration?.image,
+                            registration?.image ?? null,
                             "Current 1x1 Picture"
                           )}
                           <Form.Control
@@ -1140,8 +1139,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
                         <Form.Group controlId="thumbmark" className="mb-3">
                           <Form.Label>Right Thumbmark</Form.Label>
-                          {renderImagePreview(
-                            registration?.thumbmark,
+                            {renderImagePreview(
+                            registration?.thumbmark ?? null,
                             "Current Thumbmark"
                           )}
                           <Form.Control
@@ -1164,7 +1163,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             School Administrator Signature
                           </Form.Label>
                           {renderImagePreview(
-                            registration?.registrarSignature as string,
+                            registration?.registrarSignature as unknown as string,
                             "Current Administrator Signature"
                           )}
                           <Form.Control

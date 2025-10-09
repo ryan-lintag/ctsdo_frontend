@@ -28,11 +28,11 @@ const AdminPageSettings = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     setSettings({ ...settings, [e.target.name]: e.target.value });
   };
 
-  const handleFileUpload = async (e, field) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     if (!e.target.files?.length) return;
 
     const formData = new FormData();
@@ -51,7 +51,7 @@ const AdminPageSettings = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     try {
@@ -148,7 +148,7 @@ const AdminPageSettings = () => {
                       <Form.Label>Header Image</Form.Label>
                       <Form.Control
                         type="file"
-                        onChange={(e) => handleFileUpload(e, "headerImage")}
+                        onChange={(e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, "headerImage")}
                       />
                       {settings.headerImage && (
                         <img
@@ -164,7 +164,7 @@ const AdminPageSettings = () => {
                       <Form.Control
                         type="file"
                         onChange={(e) =>
-                          handleFileUpload(e, "enrollmentStepsImage")
+                          handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, "enrollmentStepsImage")
                         }
                       />
                       {settings.enrollmentStepsImage && (

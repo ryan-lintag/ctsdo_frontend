@@ -9,7 +9,6 @@ import {
   Accordion,
 } from "react-bootstrap";
 import { getReq, postReq } from "../lib/axios";
-import { useUserStore } from "../store/useUserStore";
 import { AccordionItemComponent } from "../components/AccordionItemComponent";
 
 interface ContactInfo {
@@ -130,6 +129,7 @@ export interface ApplicationFormData {
   signature: string;
   isApproved?: boolean;
   feedback?: string;
+  createdAt?: Date;
 }
 
 const generateId = () => {
@@ -230,8 +230,7 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
   submitCallback,
   cancelCallback,
 }) => {
-  const userProfile = useUserStore((state) => state.userProfile);
-  const [formData, setFormData] = useState<ApplicationFormData[]>([]);
+  const [_formData, setFormData] = useState<ApplicationFormData[]>([]);
   const [newFormData, setNewFormData] = useState<NewApplicationFormData>(
     defaultApplicationFormData
   );
@@ -623,32 +622,26 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
     }));
   };
 
-  const renderImagePreview = (imageData: string | null, altText: string) => {
-    if (!imageData) return null;
+  // const renderImagePreview = (imageData: string | null, altText: string) => {
+  //   if (!imageData) return null;
 
-    return (
-      <div className="mb-2">
-        <small className="text-muted">Current image:</small>
-        <br />
-        <img
-          src={imageData}
-          alt={altText}
-          style={{ maxWidth: "150px", maxHeight: "150px", objectFit: "cover" }}
-          className="border rounded"
-        />
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="mb-2">
+  //       <small className="text-muted">Current image:</small>
+  //       <br />
+  //       <img
+  //         src={imageData}
+  //         alt={altText}
+  //         style={{ maxWidth: "150px", maxHeight: "150px", objectFit: "cover" }}
+  //         className="border rounded"
+  //       />
+  //     </div>
+  //   );
+  // };
 
   useEffect(() => {
     if (application) {
       console.log("Populating form with application data:", application);
-
-      const formatDateForInput = (dateValue: string | Date | undefined) => {
-        if (!dateValue) return "";
-        const date = new Date(dateValue);
-        return date.toISOString().slice(0, 10);
-      };
 
       setNewFormData({
         idPicture: application.idPicture || "",
@@ -703,7 +696,9 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
         titleOfAssessment: application.titleOfAssessment || "",
         clientType: application.clientType || "",
         assessmentSchedule:
-          formatDateForInput(application.assessmentSchedule) || "",
+          application.assessmentSchedule
+            ? new Date(application.assessmentSchedule)
+            : new Date(),
         remarks: application.remarks || "",
         requirements: {
           pictures: application.requirements?.pictures || false,

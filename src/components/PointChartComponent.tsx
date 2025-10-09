@@ -46,7 +46,10 @@ export const options = {
 };
 
 const PointChartComponent: React.FC<CustomProps> = ({ title, labels, datasets }) => {
-  const [data, setData] = useState({ labels: [], datasets: [] });
+  const [data, setData] = useState<{ labels: string[]; datasets: CustomProps['datasets'] }>({
+    labels: [],
+    datasets: [],
+  });
 
   useEffect(() => {
     setData({ labels, datasets });

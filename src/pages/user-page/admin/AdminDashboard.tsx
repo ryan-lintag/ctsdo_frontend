@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { CountCard } from '../../../components/CountCard';
 import { Col, Row } from 'react-bootstrap';
 import BarChartComponent from '../../../components/BarChartComponent';
-import TableComponent from '../../../components/TableComponent';
 import PointChartComponent from '../../../components/PointChartComponent';
 import { getReq } from '../../../lib/axios'; // axios helper
 
@@ -15,20 +14,7 @@ interface Counts {
 
 interface ChartData {
   labels: string[];
-  datasets: { label: string; data: number[]; backgroundColor?: string; borderColor?: string }[];
-}
-
-interface Enrollment {
-  id: string;
-  name: string;
-  country?: { name: string; code: string };
-  company?: string;
-  date?: string;
-  status?: string;
-  verified?: boolean;
-  activity?: number;
-  representative?: { name: string; image: string };
-  balance?: number;
+  datasets: { label: string; data: number[]; backgroundColor: string }[];
 }
 
 const AdminDashboard: React.FC = () => {
@@ -49,7 +35,6 @@ const AdminDashboard: React.FC = () => {
     datasets: [],
   });
 
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,7 +81,6 @@ setApplicationsChart({
       label: 'Monthly Applications',
       data: applicationsData.map((item: any) => item.total),
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      borderColor: 'rgb(255, 99, 132)',
     },
   ],
 });

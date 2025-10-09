@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import axios from "axios";
 import HeaderContent from "../../components/HeaderContent";
 import { ContentWrapper } from "../../components/ContentWrapper";
 import { getReq } from "../../lib/axios";
@@ -88,7 +87,7 @@ const HomePage = () => {
   width="100%"
   height="450"
   style={{ border: 0 }}
-  allowFullScreen=""
+  allowFullScreen
   loading="lazy"
   referrerPolicy="no-referrer-when-downgrade"
   title="Company Location Map"

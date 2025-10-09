@@ -1,14 +1,9 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useUserStore } from '../../store/useUserStore';
 import { postReq } from '../../lib/axios';
 import logo from '../../assets/images/logo.jpg';
-
-interface UserDetails {
-  email: string;
-  role: 'admin' | 'applicant';
-}
 
 const LoginPage = () => {
   const userProfile = useUserStore((state) => state.userProfile);
