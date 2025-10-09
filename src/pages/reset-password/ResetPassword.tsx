@@ -21,7 +21,7 @@ const ResetPassword: React.FC = () => {
     }
 
     try {
-      const res = await postReq(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
+      const res = await postReq(`/auth/reset-password/${token}`,
         { newPassword }
       ) as any;
       setMessage(res.message || 'Password reset successful');

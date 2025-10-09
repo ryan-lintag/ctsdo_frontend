@@ -16,10 +16,11 @@ const FaqSection: React.FC = () => {
   useEffect(() => {
     const fetchFaqs = async (): Promise<void> => {
       try {
-        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`) as any;
-        setFaqs(response.data);
+        const data = await getReq(`/api/faqs`) as any;
+        setFaqs(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to fetch FAQs:', error);
+        setFaqs([]); // Ensure faqs is always an array even on error
       } finally {
         setLoading(false);
       }
@@ -34,7 +35,7 @@ const FaqSection: React.FC = () => {
         <h3>Frequently Asked Questions</h3>
         {loading ? (
           <p>Loading FAQs...</p>
-        ) : faqs.length === 0 ? (
+        ) : !faqs || faqs.length === 0 ? (
           <p>No FAQs available at the moment.</p>
         ) : (
           <ul>

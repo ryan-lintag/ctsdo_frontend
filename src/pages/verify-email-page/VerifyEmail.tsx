@@ -11,7 +11,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/auth/verify-email/${token}`) as any;
+        const response = await getReq(`/auth/verify-email/${token}`) as any;
         // If response is an object like { message: "..." }
         setMessage(response.data?.message || 'Verification successful');
         setStatus('success');

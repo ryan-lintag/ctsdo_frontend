@@ -43,6 +43,7 @@ const CourseCalendarDashboard: React.FC = () => {
       console.error('Error fetching enrolled courses:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
       setError(`Failed to load enrolled courses: ${message}`);
+      setEnrolledCourses([]); // Ensure enrolledCourses is always an array
     } finally {
       setLoading(false);
     }

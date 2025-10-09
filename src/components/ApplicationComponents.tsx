@@ -271,8 +271,8 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
 
   const fetchApplicationById = async (id: string) => {
     try {
-      const res = await getReq(`/api/application/${id}`) as any;
-      return res.data;
+      const data = await getReq(`/api/application/${id}`) as any;
+      return data;
     } catch (error) {
       console.error("Error fetching application byID:", error);
       return null;

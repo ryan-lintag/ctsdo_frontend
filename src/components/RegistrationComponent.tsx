@@ -175,10 +175,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
   const fetchRegistrationById = async (id: string) => {
     try {
-      const res = await getReq(
-        `api/registrations/${id}`
+      const data = await getReq(
+        `/api/registrations/${id}`
       ) as any;
-      return res.data;
+      return data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
       return null;
@@ -188,8 +188,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await getReq("api/courses") as any;
-      setCourses(res.data);
+      const data = await getReq("/api/courses") as any;
+      setCourses(data);
     } catch (error) {
       console.error("Error fetching courses:", error);
       setError("Failed to load courses");
