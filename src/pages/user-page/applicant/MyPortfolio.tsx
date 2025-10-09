@@ -29,7 +29,7 @@ const MyPortfolio: React.FC = () => {
 
   const updatePortfolio = async (updatedData: any) => {
     try {
-      const response = await putReq(`/api/portfolio/${userProfile._id}`, updatedData);
+      const response = await putReq(`/api/portfolio/${userProfile._id}`, updatedData) as any;
       
       // Update the portfolio state with the new profile data
       if (portfolio) {

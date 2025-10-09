@@ -25,7 +25,7 @@ const MyApplications: React.FC = () => {
   const fetchApplications = async () => {
     setIsLoading(true);
     try {
-      const res = await getReq("/api/application/user");
+      const res = await getReq("/api/application/user") as any;
       console.log("API Response:", res); // <--- check what you actually get
 
       const data = Array.isArray(res)

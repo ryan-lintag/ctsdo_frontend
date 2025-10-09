@@ -21,7 +21,7 @@ const MyCourses: React.FC = () => {
       setIsLoading(true);
 
       // Step 1: Fetch user registrations (with course info)
-      const registrations = await getReq('/api/registration/user');
+      const registrations = await getReq('/api/registration/user') as any[];
 
       // Extract both courseId & courseTitle
       const userCourses = registrations.map((reg: any) => ({

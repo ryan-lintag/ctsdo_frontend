@@ -25,7 +25,7 @@ const MyRegistrations: React.FC = () => {
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      const res = await getReq("/api/registration/user");
+      const res = await getReq("/api/registration/user") as any;
       console.log("API Response:", res); // <--- check what you actually get
 
       const data = Array.isArray(res)

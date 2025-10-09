@@ -81,7 +81,7 @@ const JobMatchingAI: React.FC = () => {
         completedCourses,
         userQuery,
         isAutoSearch
-      });
+      }) as any;
 
       if (response.success) {
         const assistantMessage: Message = {
