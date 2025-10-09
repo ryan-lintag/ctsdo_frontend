@@ -23,8 +23,8 @@ const ResetPassword: React.FC = () => {
     try {
       const res = await postReq(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
         { newPassword }
-      );
-      setMessage(res.message);
+      ) as any;
+      setMessage(res.message || 'Password reset successful');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || 'Reset failed.');

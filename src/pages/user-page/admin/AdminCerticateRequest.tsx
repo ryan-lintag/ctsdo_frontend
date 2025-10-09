@@ -28,7 +28,7 @@ const AdminCerticateRequest: React.FC = () => {
   const fetchCertificates = async () => {
     setIsLoading(true);
     try {
-      let data = await getReq("/api/certificates");
+      let data = await getReq("/api/certificates") as any[];
       data = data.map((c: Certificate) => {
         return {
           ...c,
@@ -78,7 +78,7 @@ const AdminCerticateRequest: React.FC = () => {
   const downloadCertificate = async (item: Certificate) => {
     setIsLoading(true);
     try {
-      let data = await getReq(`/api/certificates/${item._id}`);
+      let data = await getReq(`/api/certificates/${item._id}`) as any;
       console.log(data);
       downloadBase64Image(data.certificate, "certicate.png");
     } catch (err) {

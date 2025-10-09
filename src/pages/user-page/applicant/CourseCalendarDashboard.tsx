@@ -22,10 +22,10 @@ const CourseCalendarDashboard: React.FC = () => {
     setError('');
     try {
       // Fetch user's registrations
-      const registrations = await getReq('/api/registration/user');
+      const registrations = await getReq('/api/registration/user') as any[];
       
       // Fetch all courses to get complete course information
-      const allCoursesData = await getReq('/api/courses');
+      const allCoursesData = await getReq('/api/courses') as any[];
       setAllCourses(allCoursesData);
       
       // Map registrations to courses with additional enrollment info

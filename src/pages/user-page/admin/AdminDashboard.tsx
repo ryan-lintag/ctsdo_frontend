@@ -41,9 +41,9 @@ const AdminDashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       try {
         const [countsRes, registrationsRes, applicationsRes] = await Promise.all([
-          getReq('/api/admin-dashboard/counts'),
-          getReq('/api/admin-dashboard/registrations'),
-          getReq('/api/admin-dashboard/applications'),
+          getReq('/api/admin-dashboard/counts') as any,
+          getReq('/api/admin-dashboard/registrations') as any,
+          getReq('/api/admin-dashboard/applications') as any,
         ]);
 
         const countsData = countsRes?.data ?? countsRes;

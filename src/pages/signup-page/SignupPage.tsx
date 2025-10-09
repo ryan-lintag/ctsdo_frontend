@@ -41,7 +41,7 @@ const Register = () => {
     setError('');
 
     try {
-      const data = await postReq('/auth/register', formData);
+      const data = await postReq('/auth/register', formData) as any;
       setMessage(data.message || 'Verification email sent.');
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Registration failed';

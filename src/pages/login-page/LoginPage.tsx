@@ -28,7 +28,7 @@ const LoginPage = () => {
     setSuccess('');
 
     try {
-      const data = await postReq('/auth/login', { email, password });
+      const data = await postReq('/auth/login', { email, password }) as any;
 
       setSuccess(`Welcome back, ${data.email}!`);
       setLoggedInUser(data);

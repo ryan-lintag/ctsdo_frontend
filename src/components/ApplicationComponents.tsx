@@ -271,7 +271,7 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
 
   const fetchApplicationById = async (id: string) => {
     try {
-      const res = await getReq(`/api/application/${id}`);
+      const res = await getReq(`/api/application/${id}`) as any;
       return res.data;
     } catch (error) {
       console.error("Error fetching application byID:", error);
@@ -460,7 +460,7 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
         submitCallback(newFormData);
       } else {
         // Direct API call (when used standalone)
-        const res = await postReq("/api/application", formDataToSend);
+        const res = await postReq("/api/application", formDataToSend) as any;
         const newApplication = res;
         setFormData((prev) => [...prev, newApplication]);
 

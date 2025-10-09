@@ -27,7 +27,7 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
   const getCompletedCourses = async () => {
     setIsLoading(true);
     try {
-      const courses = await getReq("/api/courses/completed");
+      const courses = await getReq("/api/courses/completed") as any[];
       console.log("Completed courses:", courses);
 
       if (courses && courses.length > 0) {

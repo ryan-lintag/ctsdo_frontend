@@ -177,7 +177,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     try {
       const res = await getReq(
         `api/registrations/${id}`
-      );
+      ) as any;
       return res.data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
@@ -188,7 +188,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await getReq("api/courses");
+      const res = await getReq("api/courses") as any;
       setCourses(res.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -402,7 +402,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         submitCallback(newFormData);
       } else {
         // Direct API call (when used standalone)
-        const res = await postReq("/api/registration", formDataToSend);
+        const res = await postReq("/api/registration", formDataToSend) as any;
         const newRegistration = res;
         setFormData((prev) => [...prev, newRegistration]);
 

@@ -58,7 +58,7 @@ const JobMatchingAI: React.FC = () => {
       console.error('Error fetching completed courses:', error);
       // Fallback to all courses if completed courses endpoint fails
       try {
-        const allCourses = await getReq('/api/courses');
+        const allCourses = await getReq('/api/courses') as any[];
         const formattedCourses = allCourses.map((course: { _id: any; title: any; }) => ({
           courseId: course._id,
           courseTitle: course.title

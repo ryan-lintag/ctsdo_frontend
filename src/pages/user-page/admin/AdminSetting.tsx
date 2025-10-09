@@ -22,7 +22,7 @@ const AdminPageSettings = () => {
     const fetchSettings = async () => {
       try {
         const res = await axios.get("http://localhost:3000/api/homepage-settings");
-        if (res.data) setSettings(prevSettings => ({ ...prevSettings, ...res.data }));
+        if (res.data) setSettings(prevSettings => ({ ...prevSettings, ...(res.data as any) }));
       } catch (err) {
         console.error("Error fetching settings:", err);
       } finally {

@@ -36,7 +36,7 @@ const AdminCourses: React.FC = () => {
   const fetchCourses = async () => {
     setIsLoading(true);
     try {
-      let data = await getReq('/api/courses');
+      let data = await getReq('/api/courses') as any[];
       data = data.map((c: Course) => ({
         ...c,
         statusStr: c.status == 0 ? 'Inactive' : 'Active',

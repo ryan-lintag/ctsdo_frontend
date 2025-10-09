@@ -52,7 +52,7 @@ const AdminStudentCompletion: React.FC = () => {
     if (!student._id) return;
     setIsLoading(true);
     try {
-      const updated = await putReq(`/api/students/${student._id}/complete`, {});
+      const updated = await putReq(`/api/students/${student._id}/complete`, {}) as any;
       setStudents(prev => prev.map(s => s._id === updated._id ? updated : s));
     } catch (err) {
       console.error('Failed to mark completed:', err);

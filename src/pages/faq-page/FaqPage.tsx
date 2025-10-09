@@ -16,7 +16,7 @@ const FaqSection: React.FC = () => {
   useEffect(() => {
     const fetchFaqs = async (): Promise<void> => {
       try {
-        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`);
+        const response = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/faqs`) as any;
         setFaqs(response.data);
       } catch (error) {
         console.error('Failed to fetch FAQs:', error);
