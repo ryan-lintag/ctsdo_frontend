@@ -19,13 +19,18 @@ const AdminPageSettings = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/homepage-settings")
-      .then((res) => {
-        if (res.data) setSettings(res.data);
-      })
-      .catch((err) => console.error("Error fetching settings:", err))
-      .finally(() => setLoading(false));
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/homepage-settings");
+        if (res.data) setSettings(prevSettings => ({ ...prevSettings, ...res.data }));
+      } catch (err) {
+        console.error("Error fetching settings:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchSettings();
   }, []);
 
   const handleChange = (e: { target: { name: any; value: any; }; }) => {
@@ -44,7 +49,7 @@ const AdminPageSettings = () => {
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      setSettings((prev) => ({ ...prev, [field]: res.data.url }));
+      setSettings((prev) => ({ ...prev, [field]: (res.data as { url: string }).url }));
     } catch (error) {
       console.error("File upload failed:", error);
       alert("Error uploading file.");

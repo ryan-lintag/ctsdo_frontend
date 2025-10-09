@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAxiosInstance } from '../api/createAxiosInstance'
-import type { AxiosHeaderValue } from 'axios'
 
 const { get: GET, post: POST, put: PUT, delete: DELETE } = createAxiosInstance()
 
 export const getReq = (url: string, params?: Record<string, any>, headers?: {
-    [key: string]: AxiosHeaderValue
+    [key: string]: string
 }) => {
     const data = GET(url, {
         params, headers: {
@@ -13,14 +12,14 @@ export const getReq = (url: string, params?: Record<string, any>, headers?: {
         }
     })
     return data
-        .then((res) => res.data)
-        .catch((err) => {
+        .then((res: any) => res.data)
+        .catch((err: any) => {
             throw new Error(err)
         })
 }
 
 export const postReq = (url: string, body: Record<string, any>, headers?: {
-    [key: string]: AxiosHeaderValue
+    [key: string]: string
 }) => {
     const data = POST(url, body, {
         headers: {
@@ -28,14 +27,14 @@ export const postReq = (url: string, body: Record<string, any>, headers?: {
         }
     })
     return data
-        .then((res) => res.data)
-        .catch((err) => {
+        .then((res: any) => res.data)
+        .catch((err: any) => {
             throw new Error(err)
         })
 }
 
 export const putReq = (url: string, body: Record<string, any>, headers?: {
-    [key: string]: AxiosHeaderValue
+    [key: string]: string
 }) => {
     const data = PUT(url, body, {
         headers: {
@@ -43,14 +42,14 @@ export const putReq = (url: string, body: Record<string, any>, headers?: {
         }
     })
     return data
-        .then((res) => res.data)
-        .catch((err) => {
+        .then((res: any) => res.data)
+        .catch((err: any) => {
             throw new Error(err)
         })
 }
 
 export const deleteReq = (url: string, headers?: {
-    [key: string]: AxiosHeaderValue
+    [key: string]: string
 }) => {
     const data = DELETE(url, {
         headers: {
@@ -58,8 +57,8 @@ export const deleteReq = (url: string, headers?: {
         }
     })
     return data
-        .then((res) => res.data)
-        .catch((err) => {
+        .then((res: any) => res.data)
+        .catch((err: any) => {
             throw new Error(err)
         })
 }

@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
 import { postReq } from '../../lib/axios';
 
 
@@ -25,11 +24,10 @@ const ResetPassword: React.FC = () => {
       const res = await postReq(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`,
         { newPassword }
       );
-      setMessage(res.data.message);
+      setMessage(res.message);
       setTimeout(() => navigate('/login'), 2000);
-    } catch (err) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data.message || 'Reset failed.');
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Reset failed.');
     }
   };
 
