@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Form, Row, Col, Alert, Button, Accordion } from "react-bootstrap";
 import { getReq, postReq } from "../lib/axios";
 import { AccordionItemComponent } from "../components/AccordionItemComponent";
@@ -144,7 +145,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const location = useLocation();
   const preselectedCourseId = location.state?.preselectedCourseId;
   const { userProfile } = useUserStore();
-  const [_formData, setFormData] = useState<RegistrationData[]>([]);
+  const [formData, setFormData] = useState<RegistrationData[]>([]);
   const [newFormData, setNewFormData] = useState<NewRegistrationData>({
     ...defaultFormData,
     firstName: userProfile.firstName,
@@ -175,7 +176,9 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
   const fetchRegistrationById = async (id: string) => {
     try {
-      const res = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/registrations/${id}`);
+      const res = await getReq(
+        `api/registrations/${id}`
+      );
       return res.data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
@@ -186,7 +189,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await getReq(`${import.meta.env.VITE_API_BASE_URL}/api/courses`);
+      const res = await getReq("api/courses");
       setCourses(res.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -402,7 +405,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         // Direct API call (when used standalone)
         const res = await postReq("/api/registration", formDataToSend);
         const newRegistration = res;
-        setFormData((prev: RegistrationData[]) => [...prev, newRegistration]);
+        setFormData((prev) => [...prev, newRegistration]);
 
         const fetched = await fetchRegistrationById(newRegistration._id);
         if (fetched) console.log("Fetched Registration:", fetched);
@@ -555,7 +558,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 <Form.Group controlId="formFileMultiple" className="mb-3">
                   <Form.Label>ID Picture</Form.Label>
                   {renderImagePreview(
-                    (registration?.idPicture ?? null),
+                    registration?.idPicture,
                     "Current ID Picture"
                   )}
                   <Form.Control
@@ -1088,7 +1091,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                         >
                           <Form.Label>Applicant Signature</Form.Label>
                           {renderImagePreview(
-                            registration?.applicantSignature as unknown as string,
+                            registration?.applicantSignature as string,
                             "Current Applicant Signature"
                           )}
                           <Form.Control
@@ -1120,7 +1123,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             1x1 picture taken within the last 6 months
                           </Form.Label>
                           {renderImagePreview(
-                            (registration?.image ?? null),
+                            registration?.image,
                             "Current 1x1 Picture"
                           )}
                           <Form.Control
@@ -1138,7 +1141,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                         <Form.Group controlId="thumbmark" className="mb-3">
                           <Form.Label>Right Thumbmark</Form.Label>
                           {renderImagePreview(
-                            (registration?.thumbmark ?? null),
+                            registration?.thumbmark,
                             "Current Thumbmark"
                           )}
                           <Form.Control
@@ -1161,7 +1164,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             School Administrator Signature
                           </Form.Label>
                           {renderImagePreview(
-                            registration?.registrarSignature as unknown as string,
+                            registration?.registrarSignature as string,
                             "Current Administrator Signature"
                           )}
                           <Form.Control

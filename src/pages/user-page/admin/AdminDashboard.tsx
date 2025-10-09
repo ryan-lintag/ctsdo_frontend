@@ -4,7 +4,7 @@ import { Col, Row } from 'react-bootstrap';
 import BarChartComponent from '../../../components/BarChartComponent';
 import TableComponent from '../../../components/TableComponent';
 import PointChartComponent from '../../../components/PointChartComponent';
-import { getReq } from '../../../lib/axios'; // your axios helper
+import { getReq } from '../../../lib/axios'; // axios helper
 
 interface Counts {
   users: number;
@@ -15,20 +15,20 @@ interface Counts {
 
 interface ChartData {
   labels: string[];
-  data: number[];
+  datasets: { label: string; data: number[]; backgroundColor?: string; borderColor?: string }[];
 }
 
 interface Enrollment {
   id: string;
   name: string;
-  country: { name: string; code: string };
-  company: string;
-  date: string;
-  status: string;
-  verified: boolean;
-  activity: number;
-  representative: { name: string; image: string };
-  balance: number;
+  country?: { name: string; code: string };
+  company?: string;
+  date?: string;
+  status?: string;
+  verified?: boolean;
+  activity?: number;
+  representative?: { name: string; image: string };
+  balance?: number;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -38,27 +38,71 @@ const AdminDashboard: React.FC = () => {
     applications: 0,
     courses: 0,
   });
-  const [registrationsChart, setRegistrationsChart] = useState<ChartData>({ labels: [], data: [] });
-  const [applicationsChart, setApplicationsChart] = useState<ChartData>({ labels: [], data: [] });
+
+  const [registrationsChart, setRegistrationsChart] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+  });
+
+  const [applicationsChart, setApplicationsChart] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+  });
+
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [countsRes, registrationsRes, applicationsRes, enrollmentsRes] = await Promise.all([
+        const [countsRes, registrationsRes, applicationsRes] = await Promise.all([
           getReq('/api/admin-dashboard/counts'),
           getReq('/api/admin-dashboard/registrations'),
           getReq('/api/admin-dashboard/applications'),
-          getReq('/api/admin-dashboard/enrollments'),
         ]);
 
-        setCounts(countsRes.data);
-        setRegistrationsChart(registrationsRes.data);
-        setApplicationsChart(applicationsRes.data);
-        setEnrollments(enrollmentsRes.data);
+        const countsData = countsRes?.data ?? countsRes;
+        const registrationsData = registrationsRes?.data ?? registrationsRes;
+        const applicationsData = applicationsRes?.data ?? applicationsRes;
+
+        console.log('📊 Counts:', countsData);
+        console.log('📈 Registrations Chart:', registrationsData);
+        console.log('📈 Applications Chart:', applicationsData);
+
+        setCounts({
+          users: countsData.users ?? 0,
+          registrations: countsData.registrations ?? 0,
+          applications: countsData.applications ?? 0,
+          courses: countsData.courses ?? 0,
+        });
+
+        // ✅ FIX: Proper datasets format
+        // Map the array to Chart.js format
+setRegistrationsChart({
+  labels: registrationsData.map((item: any) => item.month),
+  datasets: [
+    {
+      label: 'Monthly Registrations',
+      data: registrationsData.map((item: any) => item.total),
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+    },
+  ],
+});
+
+setApplicationsChart({
+  labels: applicationsData.map((item: any) => item.month),
+  datasets: [
+    {
+      label: 'Monthly Applications',
+      data: applicationsData.map((item: any) => item.total),
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      borderColor: 'rgb(255, 99, 132)',
+    },
+  ],
+});
+
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        console.error('❌ Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -73,54 +117,39 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <div className='dashboard-title'>
-        Dashboard
-      </div>
+      <div className="dashboard-title">Dashboard</div>
 
       {/* Counts */}
-      <Row className='justify-content-center'>
-        <CountCard icon='users' iconColor='#ff9800' count={counts.users} text='No. of Users' />
-        <CountCard icon='window-restore' iconColor='#2196f3' count={counts.registrations} text='Total Registrations' />
-        <CountCard icon='id-card' iconColor='#009688' count={counts.applications} text='Total Applications' />
-        <CountCard icon='chalkboard' iconColor='#e91e63' count={counts.courses} text='No. of Courses' />
+      <Row className="justify-content-center">
+        <CountCard icon="users" iconColor="#ff9800" count={counts.users} text="No. of Users" />
+        <CountCard icon="address-card" iconColor="#2196f3" count={counts.registrations} text="Total Registrations" />
+        <CountCard icon="id-card" iconColor="#009688" count={counts.applications} text="Total Applications" />
+        <CountCard icon="chalkboard" iconColor="#e91e63" count={counts.courses} text="No. of Courses" />
       </Row>
 
       {/* Charts */}
-      <Row className='justify-content-center'>
-        <Col md='12' lg='6'>
+      <Row className="justify-content-center">
+        <Col md="12" lg="6">
           <BarChartComponent
-            title='Registrations'
+            title="Registrations"
             labels={registrationsChart.labels}
-            datasets={[
-              {
-                label: 'Monthly',
-                data: registrationsChart.data,
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-              },
-            ]}
+            datasets={registrationsChart.datasets}
           />
         </Col>
-        <Col md='12' lg='6'>
+        <Col md="12" lg="6">
           <PointChartComponent
-            title='Applications'
+            title="Applications"
             labels={applicationsChart.labels}
-            datasets={[
-              {
-                label: 'Monthly',
-                data: applicationsChart.data,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-              },
-            ]}
+            datasets={applicationsChart.datasets}
           />
         </Col>
       </Row>
 
       {/* Enrollments Table */}
-      <Row className='justify-content-center'>
+      {/* <Row className="justify-content-center">
         <Col>
           <TableComponent
-            title='Enrollments'
+            title="Enrollments"
             columns={[
               { field: 'name', header: 'Name', isSortable: true },
               { field: 'country.name', header: 'Country', isSortable: true },
@@ -130,7 +159,7 @@ const AdminDashboard: React.FC = () => {
             data={enrollments}
           />
         </Col>
-      </Row>
+      </Row> */}
     </>
   );
 };

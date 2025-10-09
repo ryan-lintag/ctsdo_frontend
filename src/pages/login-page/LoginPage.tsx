@@ -1,8 +1,9 @@
-import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useUserStore } from '../../store/useUserStore';
 import { postReq } from '../../lib/axios';
+import logo from '../../assets/images/logo.jpg';
 
 interface UserDetails {
   email: string;
@@ -10,13 +11,12 @@ interface UserDetails {
 }
 
 const LoginPage = () => {
-  const userProfile = useUserStore((state) => state.userProfile)
-  const setLoggedInUser = useUserStore((state) => state.setLoggedInUser)
+  const userProfile = useUserStore((state) => state.userProfile);
+  const setLoggedInUser = useUserStore((state) => state.setLoggedInUser);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -25,29 +25,27 @@ const LoginPage = () => {
       navigate('/dashboard');
       return;
     }
-  }, [navigate]);
+  }, [navigate, userProfile]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    setUserDetails(null);
 
     try {
-      const data = await postReq('/auth/login',
-        { email, password }
-      );
+      const data = await postReq('/auth/login', { email, password });
 
-      setSuccess(`Welcome, ${data.email}`);
-      setUserDetails(data);
-      setLoggedInUser(data)
-
+      setSuccess(`Welcome back, ${data.email}!`);
+      setLoggedInUser(data);
       navigate('/dashboard');
     } catch (err: any) {
-      const errorMessage =
-        err?.response?.data?.message ||
-        (typeof err?.response?.data === 'string' ? err.response.data : null) ||
-        'Something went wrong';
+      // Determine error type
+      let errorMessage = 'Invalid email or password. Please check your credentials.';
+      if (err?.response?.status === 401) {
+        errorMessage = 'Something went wrong. Please try again later.';
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
 
       setError(errorMessage);
     }
@@ -62,15 +60,33 @@ const LoginPage = () => {
           aria-label="Close"
         ></button>
 
-        <h3 className="text-center mb-3">Login</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '15px' }}>
+  {/* Image on the left */}
+  <img
+    src={logo}
+    alt="Login Icon"
+    style={{ width: '40px', height: '40px' }}
+  />
+  
+  {/* Heading text */}
+  <h3 className="mb-0">Login</h3>
+</div>
 
-        {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
 
-        {userDetails && (
-          <div className="mb-3">
-            <p><strong>Email:</strong> {userDetails.email}</p>
-            <p><strong>Role:</strong> {userDetails.role}</p>
+
+        {/* Professional Error Notification */}
+        {error && (
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>⚠️ Error:</strong> {error}
+            <button type="button" className="btn-close" onClick={() => setError('')}></button>
+          </div>
+        )}
+
+        {/* Success Notification */}
+        {success && (
+          <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✅ Success:</strong> {success}
+            <button type="button" className="btn-close" onClick={() => setSuccess('')}></button>
           </div>
         )}
 

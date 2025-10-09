@@ -10,21 +10,14 @@ import {
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface CustomProps {
   title: string;
-  labels: any;
+  labels: string[];
   datasets: {
     label: string;
-    data: any;
+    data: number[];
     backgroundColor: string;
   }[];
 }
@@ -42,23 +35,23 @@ export const options = {
   },
 };
 
-export const BarChartComponent: React.FC<CustomProps> = ({
-  title,
-  labels,
-  datasets,
-}) => {
-  const [data, setData] = useState<any>({});
+const BarChartComponent: React.FC<CustomProps> = ({ title, labels, datasets }) => {
+  const [data, setData] = useState<any>({
+    labels: [],
+    datasets: [],
+  });
 
   useEffect(() => {
     setData({
       labels,
       datasets,
     });
-  }, []);
+  }, [labels, datasets]); // ✅ re-run when props change
+
   return (
     <div className="chart-box">
       <h3>{title}</h3>
-      {data && data?.datasets?.length > 0 ? (
+      {data?.datasets?.length > 0 ? (
         <Bar options={options} data={data} />
       ) : (
         <>No data to display.</>

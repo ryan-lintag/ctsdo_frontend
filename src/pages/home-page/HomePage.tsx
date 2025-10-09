@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import axios from "axios";
 import HeaderContent from "../../components/HeaderContent";
 import { ContentWrapper } from "../../components/ContentWrapper";
 import { getReq } from "../../lib/axios";
@@ -9,10 +10,12 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getReq(`${import.meta.env.VITE_API_BASE_URL}/api/homepage-settings`)
-      .then(data => setSettings(data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      const data = await getReq("/api/homepage-settings");
+      setSettings(data);
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -85,6 +88,7 @@ const HomePage = () => {
   width="100%"
   height="450"
   style={{ border: 0 }}
+  allowFullScreen=""
   loading="lazy"
   referrerPolicy="no-referrer-when-downgrade"
   title="Company Location Map"

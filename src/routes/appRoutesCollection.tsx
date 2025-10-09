@@ -31,6 +31,7 @@ import PublicPortfolio from '../pages/PublicPortfolio'
 import StudentsTable from '../pages/user-page/admin/AdminStudentsTable'
 import AdminSetting from '../pages/user-page/admin/AdminSetting'
 
+
 const routesWrapper = (data: RouteObject[]) => {
     return data.map((route) => {
         return {
@@ -142,11 +143,6 @@ export const appRoutesCollection = createBrowserRouter(
                     element: <StudentsTable />
                 },
                 {
-                    id: 'admin.settings',
-                    path: '/admin-settings',
-                    element: <AdminSetting />
-                },
-                {
                     id: 'my.applications',
                     path: '/my-applications',
                     element: <MyApplications />
@@ -155,6 +151,11 @@ export const appRoutesCollection = createBrowserRouter(
                     id: 'admin.users',
                     path: '/admin-users',
                     element: <AdminUsers />
+                },
+                {
+                    id: 'admin.settings',
+                    path: '/admin-settings',
+                    element: <AdminSetting />
                 },
                 {
                     id: 'course.registrations',
