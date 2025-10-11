@@ -8,6 +8,8 @@ const HomePage = () => {
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getReq("/api/homepage-settings");
@@ -16,6 +18,29 @@ const HomePage = () => {
     };
     fetchData();
   }, []);
+
+  // Helper function to get the full image URL
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return "";
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    
+    // If it starts with /uploads, it's an uploaded file
+    if (imagePath.startsWith("/uploads/")) {
+      return `${API_BASE_URL}${imagePath}`;
+    }
+    
+    // If it's a default image path (like img/header.jpg)
+    if (imagePath.startsWith("img/")) {
+      return `${API_BASE_URL}/${imagePath}`;
+    }
+    
+    // Otherwise, assume it's a relative path
+    return `${API_BASE_URL}/${imagePath}`;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (!settings) return <p>No settings found.</p>;
@@ -43,7 +68,7 @@ const HomePage = () => {
             <div
               className="img ftco-intro p-1 pb-4"
               style={{
-                backgroundImage: `url(${settings.headerImage})`,
+                backgroundImage: `url(${getImageUrl(settings.headerImage)})`,
                 opacity: 0.8,
               }}
             >
@@ -73,7 +98,12 @@ const HomePage = () => {
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <img src={settings.enrollmentStepsImage} width="100%" />
+            <img 
+              src={getImageUrl(settings.enrollmentStepsImage)} 
+              alt="Enrollment Steps"
+              width="100%" 
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
           </Row>
         </ContentWrapper>
       </Container>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Spinner, Alert, Row, Col, Badge } from 'react-bootstrap';
-import { getReq } from '../../../lib/axios';
+import { getReq, putReq } from '../../../lib/axios';
 import { FormatDate } from '../../../lib/formatter';
 import type { Course } from '../../../types/common.types';
 import { CourseCalendar } from '../../../components/CourseCalendar';
@@ -9,6 +9,7 @@ import { DashboardComponent } from '../../../components/DashboardComponent';
 interface EnrolledCourse extends Omit<Course, 'status'> {
   registrationDate?: Date;
   status?: 'In Progress' | 'Completed' | 'Cancelled';
+  studentId?: string;
 }
 
 const CourseCalendarDashboard: React.FC = () => {
@@ -28,15 +29,24 @@ const CourseCalendarDashboard: React.FC = () => {
       const allCoursesData = await getReq('/api/courses') as any[];
       setAllCourses(allCoursesData);
       
+      // Fetch students data to get the actual status
+      const studentsData = await getReq('/api/students') as any[];
+      
       // Map registrations to courses with additional enrollment info
       const enrolledCoursesData = registrations.map((reg: any) => {
         const courseData = allCoursesData.find((course: Course) => course._id === reg.courseId);
+        const studentRecord = studentsData.find((s: any) => s.courseId === reg.courseId);
+        
         return {
           ...courseData,
           registrationDate: reg.entryDate,
-          status: reg.status || 'In Progress'
+          status: studentRecord?.status || 'In Progress',
+          studentId: studentRecord?._id
         };
       }).filter((course: any) => course._id); // Filter out courses that weren't found
+      
+      // Auto-complete courses that have reached 100% progress
+      await autoCompleteCoursesIfNeeded(enrolledCoursesData);
       
       setEnrolledCourses(enrolledCoursesData);
     } catch (err: unknown) {
@@ -46,6 +56,24 @@ const CourseCalendarDashboard: React.FC = () => {
       setEnrolledCourses([]); // Ensure enrolledCourses is always an array
     } finally {
       setLoading(false);
+    }
+  };
+
+  const autoCompleteCoursesIfNeeded = async (courses: EnrolledCourse[]) => {
+    try {
+      for (const course of courses) {
+        // Check if course has reached 100% and is not already completed
+        if (course.status !== 'Completed' && course.studentId) {
+          const progress = getProgressPercentage(course);
+          if (progress >= 100) {
+            // Auto-mark as completed
+            await putReq(`/api/students/${course.studentId}/complete`, {});
+            course.status = 'Completed';
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error auto-completing courses:', err);
     }
   };
 

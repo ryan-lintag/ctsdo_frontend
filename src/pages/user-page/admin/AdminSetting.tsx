@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Button, Form, Card, Row, Col, Spinner } from "react-bootstrap";
+import { Button, Form, Card, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { DashboardComponent } from "../../../components/DashboardComponent";
+import { getReq, putReq, postReq } from "../../../lib/axios";
 
 const AdminPageSettings = () => {
   const [settings, setSettings] = useState({
@@ -17,14 +17,19 @@ const AdminPageSettings = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/homepage-settings");
-        if (res.data) setSettings(prevSettings => ({ ...prevSettings, ...(res.data as any) }));
+        const data = await getReq("/api/homepage-settings");
+        if (data) setSettings(prevSettings => ({ ...prevSettings, ...(data as any) }));
       } catch (err) {
         console.error("Error fetching settings:", err);
+        setErrorMessage("Failed to load settings");
       } finally {
         setLoading(false);
       }
@@ -33,49 +38,87 @@ const AdminPageSettings = () => {
     fetchSettings();
   }, []);
 
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        setErrorMessage("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
+
   const handleChange = (e: { target: { name: any; value: any; }; }) => {
     setSettings({ ...settings, [e.target.name]: e.target.value });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    if (!e.target.files?.length) return;
+const handleFileUpload = async (
+  e: React.ChangeEvent<HTMLInputElement>,
+  field: string
+) => {
+  if (!e.target.files?.length) return;
 
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
+  const formData = new FormData();
+  formData.append("file", e.target.files[0]);
 
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/api/homepage-settings/upload",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      setSettings((prev) => ({ ...prev, [field]: (res.data as { url: string }).url }));
-    } catch (error) {
-      console.error("File upload failed:", error);
-      alert("Error uploading file.");
-    }
-  };
+  try {
+    const res = await postReq("/api/homepage-settings/upload", formData);
+    setSettings((prev) => ({ ...prev, [field]: (res as { url: string }).url }));
+    setSuccessMessage(
+      `${field === "headerImage" ? "Header" : "Enrollment Steps"} image uploaded successfully!`
+    );
+  } catch (error) {
+    console.error("File upload failed:", error);
+    setErrorMessage("Error uploading file.");
+  }
+};
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await axios.put("http://localhost:3000/api/homepage-settings", settings);
-      alert("Homepage settings updated successfully!");
+      await putReq("/api/homepage-settings", settings);
+      setSuccessMessage("Homepage settings updated successfully!");
     } catch (error) {
       console.error("Error saving settings:", error);
-      alert("Failed to save settings.");
+      setErrorMessage("Failed to save settings.");
     } finally {
       setSaving(false);
     }
   };
 
+  // Helper function to get the full image URL
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return "";
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    
+    // If it starts with /uploads, it's an uploaded file
+    if (imagePath.startsWith("/uploads/")) {
+      return `${API_BASE_URL}${imagePath}`;
+    }
+    
+    // If it's a default image path (like img/header.jpg)
+    if (imagePath.startsWith("img/")) {
+      return `${API_BASE_URL}/${imagePath}`;
+    }
+    
+    // Otherwise, assume it's a relative path
+    return `${API_BASE_URL}/${imagePath}`;
+  };
+
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-2">Loading settings...</p>
-      </div>
+      <DashboardComponent>
+        <div className="text-center mt-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2">Loading settings...</p>
+        </div>
+      </DashboardComponent>
     );
   }
 
@@ -83,6 +126,9 @@ const AdminPageSettings = () => {
     <DashboardComponent>
       <Row className="justify-content-center mt-4">
         <Col md={10} lg={8}>
+          {successMessage && <Alert variant="success">{successMessage}</Alert>}
+          {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+          
           <Card className="shadow-lg border-0">
             <Card.Header className="bg-primary text-white">
               <h4 className="mb-0">Edit Homepage Settings</h4>
@@ -153,14 +199,24 @@ const AdminPageSettings = () => {
                       <Form.Label>Header Image</Form.Label>
                       <Form.Control
                         type="file"
+                        accept="image/*"
                         onChange={(e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, "headerImage")}
                       />
                       {settings.headerImage && (
-                        <img
-                          src={`http://localhost:3000${settings.headerImage}`}
-                          alt="Header Preview"
-                          className="img-fluid rounded mt-2 shadow-sm"
-                        />
+                        <div className="mt-2">
+                          <small className="text-muted d-block mb-1">Current Image:</small>
+                          <img
+                            src={getImageUrl(settings.headerImage)}
+                            alt="Header Preview"
+                            className="img-fluid rounded shadow-sm"
+                            style={{ maxHeight: '200px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              console.error("Failed to load image:", settings.headerImage);
+                              (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=Image+Not+Found";
+                            }}
+                          />
+                          <small className="text-muted d-block mt-1">Path: {settings.headerImage}</small>
+                        </div>
                       )}
                     </Form.Group>
 
@@ -168,16 +224,26 @@ const AdminPageSettings = () => {
                       <Form.Label>Enrollment Steps Image</Form.Label>
                       <Form.Control
                         type="file"
+                        accept="image/*"
                         onChange={(e) =>
                           handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, "enrollmentStepsImage")
                         }
                       />
                       {settings.enrollmentStepsImage && (
-                        <img
-                          src={`http://localhost:3000${settings.enrollmentStepsImage}`}
-                          alt="Steps Preview"
-                          className="img-fluid rounded mt-2 shadow-sm"
-                        />
+                        <div className="mt-2">
+                          <small className="text-muted d-block mb-1">Current Image:</small>
+                          <img
+                            src={getImageUrl(settings.enrollmentStepsImage)}
+                            alt="Steps Preview"
+                            className="img-fluid rounded shadow-sm"
+                            style={{ maxHeight: '200px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              console.error("Failed to load image:", settings.enrollmentStepsImage);
+                              (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=Image+Not+Found";
+                            }}
+                          />
+                          <small className="text-muted d-block mt-1">Path: {settings.enrollmentStepsImage}</small>
+                        </div>
                       )}
                     </Form.Group>
 

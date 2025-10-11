@@ -175,9 +175,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
   const fetchRegistrationById = async (id: string) => {
     try {
-      const data = await getReq(
-        `/api/registrations/${id}`
-      ) as any;
+      const data = (await getReq(`/api/registrations/${id}`)) as any;
       return data;
     } catch (error) {
       console.error("Error fetching registration by ID:", error);
@@ -188,7 +186,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const data = await getReq("/api/courses") as any;
+      const data = (await getReq("/api/courses")) as any;
       setCourses(data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -211,10 +209,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file); // Read file as base64
+      reader.readAsDataURL(file);
       reader.onload = () => {
         if (typeof reader.result === "string") {
-          resolve(reader.result); // This is the base64 string
+          resolve(reader.result);
         } else {
           reject("Base64 conversion failed");
         }
@@ -280,116 +278,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const handleAddRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-
-    // Append main file fields (image, thumbmark)
-    if (newFormData.image) {
-      formDataToSend.append("image", newFormData.image);
-    }
-    if (newFormData.thumbmark) {
-      formDataToSend.append("thumbmark", newFormData.thumbmark);
-    }
-
-    // Append nested imageUrl file fields
-    if (newFormData.registrarSignature) {
-      formDataToSend.append(
-        "imageUrl[registrarSignature]",
-        newFormData.registrarSignature
-      );
-    }
-    if (newFormData.applicantSignature) {
-      formDataToSend.append(
-        "imageUrl[applicantSignature]",
-        newFormData.applicantSignature
-      );
-    }
-
-    // Append idPicture
-    if (newFormData.idPicture) {
-      formDataToSend.append("idPicture", newFormData.idPicture);
-    }
-
-    // Append simple fields (strings/booleans)
-    const simpleFields = [
-      "uliNumber",
-      "entryDate",
-      "lastName",
-      "firstName",
-      "middleName",
-      "extensionName",
-      "email",
-      "facebook",
-      "contactNumber",
-      "nationality",
-      "sex",
-      "civilStatus",
-      "employmentStatus",
-      "dob",
-      "courseId",
-      "scholarshipType",
-      "dateAccomplished",
-      "dateReceived",
-      "privacyAgreement",
-    ] as const;
-
-    simpleFields.forEach((key) => {
-      const value = newFormData[key];
-      if (typeof value === "string") {
-        formDataToSend.append(key, value);
-      } else if (typeof value === "boolean") {
-        formDataToSend.append(key, value ? "true" : "false");
-      }
-    });
-
-    // Append address object fields correctly
-    if (newFormData.address) {
-      for (const [key, value] of Object.entries(newFormData.address)) {
-        if (value) {
-          formDataToSend.append(`address[${key}]`, value);
-        }
-      }
-    }
-
-    // Append parentGuardian object fields correctly
-    if (newFormData.parentGuardian) {
-      for (const [key, value] of Object.entries(newFormData.parentGuardian)) {
-        if (value) {
-          formDataToSend.append(`parentGuardian[${key}]`, value);
-        }
-      }
-    }
-
-    // Append birthPlace (assuming birthPlace is an object with named keys)
-    if (newFormData.birthPlace) {
-      for (const [key, value] of Object.entries(newFormData.birthPlace)) {
-        if (value) {
-          formDataToSend.append(`birthPlace[${key}]`, value);
-        }
-      }
-    }
-
-    // Append array fields as JSON strings
-    const arrayFields = [
-      "educationalAttainment",
-      "classifications",
-      "disabilityType",
-      "disabilityCause",
-    ] as const;
-
-    arrayFields.forEach((key) => {
-      const value = newFormData[key];
-      if (value) {
-        formDataToSend.append(key, JSON.stringify(value));
-      }
-    });
-
-    // Debug print (optional)
-    console.log("Form data before submission:", newFormData);
-    console.log("FormData entries:");
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log(key, value);
-    }
-
     // Validate required fields
     if (!newFormData.courseId) {
       setError("Please select a course");
@@ -398,18 +286,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
     try {
       if (submitCallback) {
-        // Use the callback for form submission (when used in MyRegistrations)
         submitCallback(newFormData);
       } else {
-        // Direct API call (when used standalone)
-        const res = await postReq("/api/registration", formDataToSend) as any;
+        // Send JSON payload directly (backend expects application/json)
+        const res = (await postReq("/api/registration", newFormData)) as any;
         const newRegistration = res;
         setFormData((prev) => [...prev, newRegistration]);
 
         const fetched = await fetchRegistrationById(newRegistration._id);
         if (fetched) console.log("Fetched Registration:", fetched);
 
-        setNewFormData(defaultFormData); // Reset form
+        setNewFormData(defaultFormData);
         setSuccess("Registration submitted successfully.");
         setError(null);
       }
@@ -425,7 +312,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     }
   };
 
-  // Helper function to render image preview
   const renderImagePreview = (imageData: string | null, altText: string) => {
     if (!imageData) return null;
 
@@ -468,12 +354,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     }
   }, [preselectedCourseId]);
 
-  // Populate form with existing registration data when editing
   useEffect(() => {
     if (registration) {
       console.log("Populating form with registration data:", registration);
 
-      // Format dates for input fields (convert from ISO to YYYY-MM-DD)
       const formatDateForInput = (dateString: string | Date) => {
         if (!dateString) return "";
         const date = new Date(dateString);
@@ -482,12 +366,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
       setNewFormData({
         ...registration,
-        // Format dates for input fields
         entryDate: formatDateForInput(registration.entryDate),
         dob: formatDateForInput(registration.dob),
         dateAccomplished: formatDateForInput(registration.dateAccomplished),
         dateReceived: formatDateForInput(registration.dateReceived),
-        // Ensure arrays are properly handled
         educationalAttainment: Array.isArray(registration.educationalAttainment)
           ? registration.educationalAttainment
           : registration.educationalAttainment
@@ -508,7 +390,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
           : registration.disabilityCause
           ? [registration.disabilityCause]
           : [],
-        // Ensure nested objects have default structure
         address: registration.address || {
           street: "",
           barangay: "",
@@ -526,7 +407,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
           name: "",
           address: "",
         },
-        // Handle file fields (keep as null for editing since we can't populate file inputs)
         idPicture: null,
         image: null,
         thumbmark: null,
@@ -600,7 +480,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                               type="date"
                               name="entryDate"
                               value={newFormData.entryDate}
-                              min={new Date().toISOString().split("T")[0]} // ⬅️ Prevent yesterday or earlier
+                              min={new Date().toISOString().split("T")[0]}
                               onChange={handleRegistrationInputChange}
                             />
                           </Form.Group>
@@ -1139,7 +1019,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
                         <Form.Group controlId="thumbmark" className="mb-3">
                           <Form.Label>Right Thumbmark</Form.Label>
-                            {renderImagePreview(
+                          {renderImagePreview(
                             registration?.thumbmark ?? null,
                             "Current Thumbmark"
                           )}
@@ -1195,7 +1075,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 </Accordion>
               </Row>
 
-              {/* You can continue building other form fields here */}
               <br />
 
               <div className="label">

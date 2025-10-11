@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { DashboardComponent } from '../../../components/DashboardComponent';
 import { Col, Row } from 'react-bootstrap';
 import TableComponent from '../../../components/TableComponent';
-import { getReq, putReq } from '../../../lib/axios';
+import { getReq } from '../../../lib/axios';
 import { Button as PrimeButton } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { LoaderBoundary } from '../../../components/LoaderBoundary';
 import type { Student, Course, User } from '../../../types/common.types';
 
-const STUDENT_DEFAULT = { _id: '', userId: '', courseId: '', status: 'In Progress', name: '', courseTitle: '' };
-
 const AdminStudentCompletion: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [student, setStudent] = useState<Student>(STUDENT_DEFAULT);
   const [isLoading, setIsLoading] = useState(true);
-  const [confirmDialog, setConfirmDialog] = useState(false);
+  const [detailsDialog, setDetailsDialog] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   // Fetch students, users, and courses
   const fetchStudents = async () => {
@@ -31,7 +29,10 @@ const AdminStudentCompletion: React.FC = () => {
         return {
           ...s,
           name: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+          email: user?.email || 'N/A',
           courseTitle: course ? course.title : 'Unknown',
+          courseStartDate: course?.startDate || '',
+          courseEndDate: course?.endDate || '',
         };
       });
 
@@ -47,39 +48,27 @@ const AdminStudentCompletion: React.FC = () => {
     fetchStudents();
   }, []);
 
-  // Mark student as completed
-  const markCompleted = async () => {
-    if (!student._id) return;
-    setIsLoading(true);
-    try {
-      const updated = await putReq(`/api/students/${student._id}/complete`, {}) as any;
-      setStudents(prev => prev.map(s => s._id === updated._id ? updated : s));
-    } catch (err) {
-      console.error('Failed to mark completed:', err);
-    } finally {
-      setConfirmDialog(false);
-      setStudent(STUDENT_DEFAULT);
-      setIsLoading(false);
-    }
+  const hideDetailsDialog = () => {
+    setDetailsDialog(false);
+    setSelectedStudent(null);
   };
 
-  // Open confirmation dialog
-  const confirmMarkCompleted = (s: Student) => {
-    setStudent(s);
-    setConfirmDialog(true);
+  const viewStudentDetails = (s: Student) => {
+    setSelectedStudent(s);
+    setDetailsDialog(true);
   };
-
-  const hideDialog = () => setConfirmDialog(false);
 
   const actionBodyTemplate = (s: Student) => {
     return (
-      <PrimeButton 
-        label="Mark Completed" 
-        outlined 
-        severity="success" 
-        disabled={s.status === 'Completed'} 
-        onClick={() => confirmMarkCompleted(s)} 
-      />
+      <div className="d-flex gap-2">
+        <PrimeButton 
+          label="View" 
+          outlined 
+          severity="info" 
+          size="small"
+          onClick={() => viewStudentDetails(s)} 
+        />
+      </div>
     );
   };
 
@@ -108,22 +97,58 @@ const AdminStudentCompletion: React.FC = () => {
       </LoaderBoundary>
 
       <Dialog 
-        visible={confirmDialog} 
-        style={{ width: '32rem' }} 
-        header="Confirm Completion" 
+        visible={detailsDialog} 
+        style={{ width: '40rem' }} 
+        header="Student Course Details" 
         modal 
-        onHide={hideDialog}
+        onHide={hideDetailsDialog}
         footer={
-          <>
-            <PrimeButton label="No" icon="pi pi-times" outlined className="mr-3" onClick={hideDialog} />
-            <PrimeButton label="Yes" icon="pi pi-check" severity="success" onClick={markCompleted} />
-          </>
+          <PrimeButton label="Close" icon="pi pi-times" onClick={hideDetailsDialog} />
         }
       >
-        {student && (
-          <div className="confirmation-content">
-            <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-            Are you sure you want to mark <b>{student.name}</b> for the course <b>{student.courseTitle}</b> as Completed?
+        {selectedStudent && (
+          <div className="student-details-content">
+            <div className="mb-4">
+              <h5 className="text-primary mb-3">Student Information</h5>
+              <div className="details-grid" style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '10px' }}>
+                <strong>Name:</strong>
+                <span>{selectedStudent.name}</span>
+                
+                <strong>Email:</strong>
+                <span>{selectedStudent.email || 'N/A'}</span>
+                
+                <strong>Status:</strong>
+                <span>
+                  <span className={`badge ${selectedStudent.status === 'Completed' ? 'bg-success' : 'bg-primary'}`}>
+                    {selectedStudent.status}
+                  </span>
+                </span>
+                
+                <strong>Approved Date:</strong>
+                <span>{selectedStudent.approvedDate ? new Date(selectedStudent.approvedDate).toLocaleDateString() : 'N/A'}</span>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <h5 className="text-primary mb-3">Course Information</h5>
+              <div className="details-grid" style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '10px' }}>
+                <strong>Course Title:</strong>
+                <span>{selectedStudent.courseTitle}</span>
+                
+                <strong>Start Date:</strong>
+                <span>{selectedStudent.courseStartDate ? new Date(selectedStudent.courseStartDate).toLocaleDateString() : 'N/A'}</span>
+                
+                <strong>End Date:</strong>
+                <span>{selectedStudent.courseEndDate ? new Date(selectedStudent.courseEndDate).toLocaleDateString() : 'N/A'}</span>
+              </div>
+            </div>
+
+            {selectedStudent.status === 'Completed' && (
+              <div className="alert alert-success mt-3">
+                <i className="pi pi-check-circle mr-2"></i>
+                This student has successfully completed the course!
+              </div>
+            )}
           </div>
         )}
       </Dialog>

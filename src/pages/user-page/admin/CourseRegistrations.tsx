@@ -115,17 +115,24 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
   // };
 
   const submitRegistration = async (data: RegistrationData) => {
-    if (!selectedRegistration?._id) return;
     setIsLoading(true);
     try {
-      await putReq(`/api/registration/${selectedRegistration._id}`, data);
-      setSuccess('Registration updated successfully!');
+      if (selectedRegistration?._id) {
+        // Update existing registration
+        await putReq(`/api/registration/${selectedRegistration._id}`, data);
+        setSuccess('Registration updated successfully!');
+      } else {
+        // Create new registration - Note: This requires admin to be authenticated
+        // You may need to adjust the endpoint or add userId to the data
+        await putReq('/api/registration', data);
+        setSuccess('Registration created successfully!');
+      }
       setShowRegistrationForm(false);
       setSelectedRegistration(null);
       await fetchRegistrations(); // Refresh the list
     } catch (err) {
-      console.error('Failed to update registration:', err);
-      setError('Failed to update registration');
+      console.error('Failed to save registration:', err);
+      setError('Failed to save registration');
     } finally {
       setIsLoading(false);
     }
@@ -360,6 +367,21 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
       {error && <Alert variant="danger">{error}</Alert>}
 
       <LoaderBoundary isLoading={isLoading}>
+        {/* Add Registration Button */}
+        <Row className="mb-3">
+          <Col>
+            <BSButton 
+              variant="success" 
+              onClick={() => {
+                setSelectedRegistration(null);
+                setShowRegistrationForm(true);
+              }}
+            >
+              + Add Registration
+            </BSButton>
+          </Col>
+        </Row>
+
         {/* Filter Buttons */}
         <Row className="mb-4">
           <Col>
@@ -404,8 +426,8 @@ const filterRegistrations = (data: RegistrationData[], filter: 'all' | 'pending'
         </Row>
       </LoaderBoundary>
 
-      {/* Replace RegistrationData with your actual registration form component, e.g. RegistrationForm */}
-      {showRegistrationForm && selectedRegistration !== null && (
+      {/* Registration Form */}
+      {showRegistrationForm && (
         <RegistrationForm
           registration={selectedRegistration}
           submitCallback={submitRegistration}

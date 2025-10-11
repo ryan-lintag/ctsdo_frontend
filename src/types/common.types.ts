@@ -145,7 +145,11 @@ export interface Student {
   courseId: string;
   status: string;
   name?: string; // full name for display
+  email?: string; // email for display
   courseTitle?: string; // course title for display
+  courseStartDate?: string | Date; // course start date
+  courseEndDate?: string | Date; // course end date
+  approvedDate?: string | Date; // date when student was approved
 }
 
 export interface User {

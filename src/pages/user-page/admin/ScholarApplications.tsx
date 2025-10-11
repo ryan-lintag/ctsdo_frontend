@@ -206,7 +206,15 @@ const ScholarApplications: React.FC = () => {
       {error && <Alert variant="danger">{error}</Alert>}
 
       <LoaderBoundary isLoading={isLoading}>
-        <BSButton className="mb-3 btn-success" onClick={() => setShowApplicationForm(true)}>+ New Application</BSButton>
+        <BSButton 
+          className="mb-3 btn-success" 
+          onClick={() => {
+            setSelectedApplication(null);
+            setShowApplicationForm(true);
+          }}
+        >
+          + Add Application
+        </BSButton>
 
         {/* Filters */}
         <Row className="mb-4">
@@ -236,7 +244,7 @@ const ScholarApplications: React.FC = () => {
         </Row>
 
         {/* Application Form */}
-        {showApplicationForm && selectedApplication !== null && (
+        {showApplicationForm && (
           <ApplicationsForm
             application={selectedApplication}
             submitCallback={submitApplication}

@@ -357,110 +357,13 @@ export const ApplicationsForm: React.FC<ApplicationFormProps> = ({
   const handleAddApplicationForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-
-    const simpleFields = [
-      "idPicture",
-      "applicantSignature",
-      "referenceNumber",
-      "nameOfSchool",
-      "addressOfSchool",
-      "age",
-      "firstName",
-      "lastName",
-      "middleName",
-      "middleInitial",
-      "extensionName",
-      "uliNumber",
-      "dateOfApplication",
-      "dateOfBirth",
-      "civilStatus",
-      "motherName",
-      "fatherName",
-      "employmentStatus",
-      "trainingCenter",
-      "titleOfAssessment",
-      "clientType",
-      "sex",
-    ] as const;
-
-    simpleFields.forEach((key) => {
-      const value = newFormData[key];
-      if (typeof value === "string") {
-        formDataToSend.append(key, value);
-      } else if (typeof value === "boolean") {
-        formDataToSend.append(key, value ? "true" : "false");
-      }
-    });
-
-    if (newFormData.address) {
-      for (const [key, value] of Object.entries(newFormData.address)) {
-        if (value) {
-          formDataToSend.append(`address[${key}]`, value);
-        }
-      }
-    }
-    if (newFormData.contactInfo) {
-      for (const [key, value] of Object.entries(newFormData.contactInfo)) {
-        if (value) {
-          formDataToSend.append(`contactInfo[${key}]`, value);
-        }
-      }
-    }
-    if (newFormData.assessmentSchedule) {
-      for (const [key, value] of Object.entries(
-        newFormData.assessmentSchedule
-      )) {
-        if (value) {
-          formDataToSend.append(`assessmentSchedule[${key}]`, value);
-        }
-      }
-    }
-    if (newFormData.requirements) {
-      for (const [key, value] of Object.entries(newFormData.requirements)) {
-        if (value) {
-          formDataToSend.append(`requirements[${key}]`, value);
-        }
-      }
-    }
-    if (newFormData.birthPlace) {
-      for (const [key, value] of Object.entries(newFormData.birthPlace)) {
-        if (value) {
-          formDataToSend.append(`birthPlace[${key}]`, value);
-        }
-      }
-    }
-
-    const arrayFieldKeys = [
-      "civilStatus",
-      "employmentStatus",
-      "titleOfAssessment",
-      "workExperience",
-      "trainingsAttended",
-      "licensureExamsPassed",
-      "competencyAssessmentsPassed",
-      "pictures",
-      "education",
-    ] as const;
-
-    arrayFieldKeys.forEach((key) => {
-      const value = newFormData[key];
-      if (value) {
-        formDataToSend.append(key, JSON.stringify(value));
-      }
-    });
-
-    for (let pair of formDataToSend.entries()) {
-      console.log(pair[0], ":", pair[1]);
-    }
-
     try {
       if (submitCallback) {
         // Use the callback (when used in MyApplications)
         submitCallback(newFormData);
       } else {
-        // Direct API call (when used standalone)
-        const res = await postReq("/api/application", formDataToSend) as any;
+        // Direct API call - send JSON payload (backend expects application/json)
+        const res = await postReq("/api/application", newFormData) as any;
         const newApplication = res;
         setFormData((prev) => [...prev, newApplication]);
 
