@@ -134,6 +134,7 @@ interface RegistrationFormProps {
   registration?: RegistrationData | null;
   submitCallback?: (data: RegistrationData) => void;
   cancelCallback?: () => void;
+  submitting?: boolean;
 }
 
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({

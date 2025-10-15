@@ -223,6 +223,7 @@ interface ApplicationFormProps {
   application?: ApplicationFormData | null;
   submitCallback?: (data: ApplicationFormData) => void;
   cancelCallback?: () => void;
+  submitting?: boolean;
 }
 
 export const ApplicationsForm: React.FC<ApplicationFormProps> = ({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DashboardComponent } from "../../../components/DashboardComponent";
 import { Button, Col, Row } from "react-bootstrap";
 import TableComponent from "../../../components/TableComponent";
@@ -11,6 +11,7 @@ import {
 } from "../../../components/RegistrationComponent";
 import { Button as PrimeButton } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { Toast } from "primereact/toast";
 
 const MyRegistrations: React.FC = () => {
   const [registrations, setRegistrations] = useState<RegistrationData[]>([]);
@@ -18,16 +19,17 @@ const MyRegistrations: React.FC = () => {
     useState<RegistrationData | null>(null);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteRegistrationDialog, setDeleteRegistrationDialog] =
     useState(false);
+
+  const toast = useRef<Toast>(null);
 
   // Fetch registrations
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      const res = await getReq("/api/registration/user") as any;
-      console.log("API Response:", res); // <--- check what you actually get
-
+      const res = (await getReq("/api/registration/user")) as any;
       const data = Array.isArray(res)
         ? res
         : Array.isArray(res?.registrations)
@@ -42,6 +44,12 @@ const MyRegistrations: React.FC = () => {
       setRegistrations(formatted);
     } catch (err) {
       console.error("Failed to fetch registrations", err);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to load registrations. Please try again.",
+        life: 4000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +63,7 @@ const MyRegistrations: React.FC = () => {
 
   // Submit registration (create or update)
   const submitRegistration = async (registrationData: RegistrationData) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       if (selectedRegistration && selectedRegistration._id) {
         // Update existing registration
@@ -63,21 +71,36 @@ const MyRegistrations: React.FC = () => {
           `/api/registration/${selectedRegistration._id}`,
           registrationData
         );
+        toast.current?.show({
+          severity: "success",
+          summary: "Updated",
+          detail: "Registration updated successfully.",
+          life: 3000,
+        });
       } else {
         // Create new registration
         await postReq("/api/registration", registrationData);
+        toast.current?.show({
+          severity: "success",
+          summary: "Submitted",
+          detail: "Registration submitted successfully.",
+          life: 3000,
+        });
       }
 
-      // Refresh the list
       await fetchRegistrations();
-
-      // Close the form
       setShowRegistrationForm(false);
       setSelectedRegistration(null);
     } catch (err) {
       console.error("Failed to submit registration", err);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to submit registration. Please try again.",
+        life: 4000,
+      });
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -94,10 +117,22 @@ const MyRegistrations: React.FC = () => {
     try {
       if (selectedRegistration?._id) {
         await deleteReq(`/api/registration/${selectedRegistration._id}`);
+        toast.current?.show({
+          severity: "success",
+          summary: "Deleted",
+          detail: "Registration deleted successfully.",
+          life: 3000,
+        });
         await fetchRegistrations();
       }
     } catch (err) {
       console.error("Failed to delete registration", err);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to delete registration. Please try again.",
+        life: 4000,
+      });
     } finally {
       setSelectedRegistration(null);
       setIsLoading(false);
@@ -116,39 +151,39 @@ const MyRegistrations: React.FC = () => {
     setSelectedRegistration(null);
   };
 
-const registrationStatusTemplate = (registration: RegistrationData) => {
-  if (registration.isApproved === true) {
-    return (
-      <span>
-        <i className="pi pi-check-circle me-1 text-success"></i> Approved
-      </span>
-    );
-  } else if (registration.feedback) {
-    return (
-      <span>
-        <i className="pi pi-times-circle me-1 text-danger"></i> Rejected
-      </span>
-    );
-  } else if (registration.isApproved === false) {
-    return (
-      <span>
-        <i className="pi pi-clock me-1 text-warning"></i> Pending
-      </span>
-    );
-  } else {
-    return (
-      <span>
-        <i className="pi pi-question-circle me-1 text-secondary"></i> Not Applied
-      </span>
-    );
-  }
-};
-
+  // Registration Status Display
+  const registrationStatusTemplate = (registration: RegistrationData) => {
+    if (registration.isApproved === true) {
+      return (
+        <span>
+          <i className="pi pi-check-circle me-1 text-success"></i> Approved
+        </span>
+      );
+    } else if (registration.feedback) {
+      return (
+        <span>
+          <i className="pi pi-times-circle me-1 text-danger"></i> Rejected
+        </span>
+      );
+    } else if (registration.isApproved === false) {
+      return (
+        <span>
+          <i className="pi pi-clock me-1 text-warning"></i> Pending
+        </span>
+      );
+    } else {
+      return (
+        <span>
+          <i className="pi pi-question-circle me-1 text-secondary"></i> Not Applied
+        </span>
+      );
+    }
+  };
 
   // Action buttons template
   const actionBodyTemplate = (item: RegistrationData) => {
     return (
-      <React.Fragment>
+      <>
         <PrimeButton
           icon="pi pi-pencil"
           style={{ borderRadius: "50px" }}
@@ -163,13 +198,12 @@ const registrationStatusTemplate = (registration: RegistrationData) => {
           severity="danger"
           onClick={() => confirmDeleteRegistration(item)}
         />
-      </React.Fragment>
+      </>
     );
   };
 
-  // Delete dialog footer
   const deleteRegistrationDialogFooter = (
-    <React.Fragment>
+    <>
       <PrimeButton
         label="No"
         icon="pi pi-times"
@@ -183,16 +217,16 @@ const registrationStatusTemplate = (registration: RegistrationData) => {
         severity="danger"
         onClick={deleteRegistration}
       />
-    </React.Fragment>
+    </>
   );
 
-  // Load on mount
   useEffect(() => {
     fetchRegistrations();
   }, []);
 
   return (
     <DashboardComponent>
+      <Toast ref={toast} />
       <div className="dashboard-title">Registration Management</div>
       <LoaderBoundary isLoading={isLoading}>
         {showRegistrationForm ? (
@@ -200,6 +234,7 @@ const registrationStatusTemplate = (registration: RegistrationData) => {
             registration={selectedRegistration}
             submitCallback={submitRegistration}
             cancelCallback={cancelRegistration}
+            submitting={isSubmitting} // ✅ optional prop (add to your form interface)
           />
         ) : (
           <>
@@ -215,31 +250,11 @@ const registrationStatusTemplate = (registration: RegistrationData) => {
                 <TableComponent
                   title=""
                   columns={[
-                    {
-                      field: "uliNumber",
-                      header: "Uli Number",
-                      isSortable: true,
-                    },
-                    {
-                      field: "firstName",
-                      header: "First Name",
-                      isSortable: true,
-                    },
-                    {
-                      field: "requestDateStr",
-                      header: "Request Date",
-                      isSortable: true,
-                    },
-                    {
-                      field: "isApproved",
-                      header: "Approval",
-                      body: registrationStatusTemplate,
-                    },
-                    {
-                      field: "_id",
-                      header: "Actions",
-                      body: actionBodyTemplate,
-                    },
+                    { field: "uliNumber", header: "ULI Number", isSortable: true },
+                    { field: "firstName", header: "First Name", isSortable: true },
+                    { field: "requestDateStr", header: "Request Date", isSortable: true },
+                    { field: "isApproved", header: "Approval", body: registrationStatusTemplate },
+                    { field: "_id", header: "Actions", body: actionBodyTemplate },
                   ]}
                   data={registrations}
                 />
@@ -259,10 +274,7 @@ const registrationStatusTemplate = (registration: RegistrationData) => {
         onHide={hideDeleteRegistrationDialog}
       >
         <div className="confirmation-content">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
+          <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
           {selectedRegistration && (
             <span>
               Are you sure you want to delete the registration for{" "}
