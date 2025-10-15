@@ -53,10 +53,7 @@ const AdminCerticateRequest: React.FC = () => {
     setIsLoading(true);
     try {
       if (item._id) {
-        await putReq(`/api/certificates/${certificate._id}`, {
-          status: item.status,
-          courseId: item.courseId,
-        });
+        await putReq(`/api/certificates/${certificate._id}`, item);
       } else {
         await postReq(`/api/certificates`, item);
       }
