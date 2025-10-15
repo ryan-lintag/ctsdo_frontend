@@ -32,6 +32,10 @@ const HomePage = () => {
     if (imagePath.startsWith("/uploads/")) {
       return `${API_BASE_URL}${imagePath}`;
     }
+
+    if (imagePath.startsWith("data:image")) {
+      return imagePath;
+    }
     
     // If it's a default image path (like img/header.jpg)
     if (imagePath.startsWith("img/")) {

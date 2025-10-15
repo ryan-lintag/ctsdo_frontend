@@ -65,7 +65,7 @@ const handleFileUpload = async (
     const res = await postReq("/api/homepage-settings/upload", formData, {
       "Content-Type": "multipart/form-data"
     });
-    setSettings((prev) => ({ ...prev, [field]: (res as { url: string }).url }));
+    setSettings((prev) => ({ ...prev, [field]: res['base64'] }));
     setSuccessMessage(
       `${field === "headerImage" ? "Header" : "Enrollment Steps"} image uploaded successfully!`
     );
@@ -92,6 +92,7 @@ const handleFileUpload = async (
 
   // Helper function to get the full image URL
   const getImageUrl = (imagePath: string) => {
+    console.log('imagePath', imagePath)
     if (!imagePath) return "";
     
     // If it's already a full URL, return as is
@@ -102,6 +103,10 @@ const handleFileUpload = async (
     // If it starts with /uploads, it's an uploaded file
     if (imagePath.startsWith("/uploads/")) {
       return `${API_BASE_URL}${imagePath}`;
+    }
+
+    if (imagePath.startsWith("data:image")) {
+      return imagePath;
     }
     
     // If it's a default image path (like img/header.jpg)
@@ -217,7 +222,7 @@ const handleFileUpload = async (
                               (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=Image+Not+Found";
                             }}
                           />
-                          <small className="text-muted d-block mt-1">Path: {settings.headerImage}</small>
+                          {/* <small className="text-muted d-block mt-1">Path: {settings.headerImage}</small> */}
                         </div>
                       )}
                     </Form.Group>
@@ -244,7 +249,7 @@ const handleFileUpload = async (
                               (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=Image+Not+Found";
                             }}
                           />
-                          <small className="text-muted d-block mt-1">Path: {settings.enrollmentStepsImage}</small>
+                          {/* <small className="text-muted d-block mt-1">Path: {settings.enrollmentStepsImage}</small> */}
                         </div>
                       )}
                     </Form.Group>
