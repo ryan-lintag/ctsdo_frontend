@@ -169,13 +169,13 @@ const ScholarApplications: React.FC = () => {
   // Table templates
   const actionBodyTemplate = (application: ApplicationFormData) => (
     <>
-      <PrimeButton icon="pi pi-eye" outlined className="me-2" onClick={() => viewDetails(application)} />
-      <PrimeButton icon="pi pi-pencil" outlined className="me-2" severity="info" onClick={() => editApplication(application)} />
-      <PrimeButton icon="pi pi-trash" outlined className="me-2" severity="danger" onClick={() => confirmDelete(application)} />
+      <PrimeButton icon="pi pi-eye" style={{ borderRadius: '50px' }} outlined className="me-2" onClick={() => viewDetails(application)} />
+      <PrimeButton icon="pi pi-pencil" style={{ borderRadius: '50px' }} outlined className="me-2" severity="info" onClick={() => editApplication(application)} />
+      <PrimeButton icon="pi pi-trash" style={{ borderRadius: '50px' }} outlined className="me-2" severity="danger" onClick={() => confirmDelete(application)} />
       {!application.isApproved && !application.feedback && (
         <>
-          <PrimeButton icon="pi pi-check" outlined className="me-2" severity="success" onClick={() => confirmApprove(application)} />
-          <PrimeButton icon="pi pi-times" outlined className="me-2" severity="warning" onClick={() => confirmReject(application)} />
+          <PrimeButton icon="pi pi-check" style={{ borderRadius: '50px' }} outlined className="me-2" severity="success" onClick={() => confirmApprove(application)} />
+          <PrimeButton icon="pi pi-times" style={{ borderRadius: '50px' }} outlined className="me-2" severity="warning" onClick={() => confirmReject(application)} />
         </>
       )}
     </>

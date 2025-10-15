@@ -64,9 +64,9 @@ const AdminUsers: React.FC = () => {
 
   const approvalBodyTemplate = (row: ApplicantRow) => {
     if (row.isApproved === true)
-      return <span className="badge bg-success">Approved</span>;
+      return <span className="badge bg-success">Scholar</span>;
     if (row.isApproved === false)
-      return <span className="badge bg-warning text-dark">Pending</span>;
+      return <span className="badge bg-warning text-dark">Waiting for Approval</span>;
     return <span className="badge bg-secondary">Not Applied</span>;
   };
 
