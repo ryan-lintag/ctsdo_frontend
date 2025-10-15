@@ -62,7 +62,9 @@ const handleFileUpload = async (
   formData.append("file", e.target.files[0]);
 
   try {
-    const res = await postReq("/api/homepage-settings/upload", formData);
+    const res = await postReq("/api/homepage-settings/upload", formData, {
+      "Content-Type": "multipart/form-data"
+    });
     setSettings((prev) => ({ ...prev, [field]: (res as { url: string }).url }));
     setSuccessMessage(
       `${field === "headerImage" ? "Header" : "Enrollment Steps"} image uploaded successfully!`
