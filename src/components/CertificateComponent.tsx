@@ -12,6 +12,46 @@ interface CountCardProps {
   cancelCallback: () => void;
 }
 
+interface CertificateDesign {
+  backgroundImage?: string;
+  containerWidth?: string;
+  containerHeight?: string;
+  logo1?: string;
+  logo2?: string;
+  logo3?: string;
+  certificateTitle?: string;
+  certificateSubtitle?: string;
+  presentedToText?: string;
+  titleFontSize?: string;
+  titleFontFamily?: string;
+  titleColor?: string;
+  titleFontWeight?: string;
+  subtitleFontSize?: string;
+  subtitleFontFamily?: string;
+  subtitleColor?: string;
+  presentedToFontSize?: string;
+  presentedToFontFamily?: string;
+  presentedToColor?: string;
+  nameFontSize?: string;
+  nameFontFamily?: string;
+  nameColor?: string;
+  nameLetterSpacing?: string;
+  nameFontWeight?: string;
+  namePaddingTop?: string;
+  textBlockFontFamily?: string;
+  textBlockFontSize?: string;
+  textBlockColor?: string;
+  textBlockLetterSpacing?: string;
+  signatureNameFontSize?: string;
+  signatureTitleFontSize?: string;
+  signatureNameFontWeight?: string;
+  signatureColor?: string;
+  leftSignatureName?: string;
+  leftSignatureTitle?: string;
+  rightSignatureName?: string;
+  rightSignatureTitle?: string;
+}
+
 export const CertificateComponent: React.FC<CountCardProps> = ({
   certificate,
   submitCallback,
@@ -22,6 +62,28 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
   const [newCertificate, setNewCertificate] =
     useState<Certificate>(certificate);
   const [isLoading, setIsLoading] = useState(false);
+  const [certificateDesign, setCertificateDesign] = useState<CertificateDesign>({
+    backgroundImage: "img/certificate.png",
+    containerWidth: "1000px",
+    containerHeight: "707px",
+    nameFontSize: "80px",
+    nameFontFamily: "'Imperial Script'",
+    nameColor: "#cfaa51",
+    nameLetterSpacing: "2px",
+    nameFontWeight: "bold",
+    namePaddingTop: "320px",
+    textBlockFontSize: "20px",
+    textBlockColor: "#000000",
+    textBlockLetterSpacing: "1px",
+    signatureNameFontSize: "20px",
+    signatureTitleFontSize: "16px",
+    signatureNameFontWeight: "bold",
+    signatureColor: "#000000",
+    leftSignatureName: "HON. MYLA B. CLARETE",
+    leftSignatureTitle: "ACTING MUNICIPAL MAYOR",
+    rightSignatureName: "JOHN PAUL L. MARTINEZ EN.P",
+    rightSignatureTitle: "OIC - CTSDO"
+  });
   const divRef = useRef(null);
 
   const getCompletedCourses = async () => {
@@ -51,6 +113,21 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
   };
 
   useEffect(() => {
+    const fetchCertificateDesign = async () => {
+      try {
+        const settings = await getReq("/api/homepage-settings") as any;
+        if (settings?.certificateDesign) {
+          setCertificateDesign((prev) => ({
+            ...prev,
+            ...settings.certificateDesign
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching certificate design settings:", error);
+        // Use defaults if fetch fails
+      }
+    };
+
     if (newCertificate.userId == userProfile._id || !newCertificate._id) {
       setNewCertificate((prev) => ({
         ...prev,
@@ -59,6 +136,8 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
         lastName: userProfile.lastName,
       }));
     }
+    
+    fetchCertificateDesign();
     getCompletedCourses();
   }, []);
 
@@ -227,47 +306,125 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
                 ref={divRef}
                 style={{
                   textAlign: "center",
-                  fontSize: "20px",
-                  backgroundImage: "url(" + certificateImg + ")",
+                  fontSize: certificateDesign.textBlockFontSize || "20px",
+                  backgroundImage: `url(${certificateDesign.backgroundImage || certificateImg})`,
                   backgroundRepeat: "no-repeat",
                   backgroundSize: "100%",
-                  width: "1000px",
-                  height: "707px",
+                  width: certificateDesign.containerWidth || "1000px",
+                  height: certificateDesign.containerHeight || "707px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  padding: "20px",
+                  boxSizing: "border-box",
                 }}
               >
+                {/* Logos */}
                 <Row
                   style={{
-                    height: "430px",
-                    fontSize: "20px",
-                    width: "90%",
-                    margin: "auto",
+                    width: "30%",
                     textAlign: "center",
-                    paddingTop: "320px",
+                    justifyContent: "space-around",
+                    marginTop: "30px",
+                    marginBottom: "-30px",
                   }}
                 >
-                  <Col
-                    style={{
-                      fontSize: "80px",
-                      fontWeight: "bold",
-                      fontFamily: `'Imperial Script'`,
-                      letterSpacing: "2px",
-                      color: "#cfaa51",
-                    }}
-                  >
+                  {certificateDesign.logo1 && (
+                    <Col xs="4">
+                      <img src={certificateDesign.logo1} alt="Logo 1" style={{ height: "80px", objectFit: "contain" }} />
+                    </Col>
+                  )}
+                  {certificateDesign.logo2 && (
+                    <Col xs="4">
+                      <img src={certificateDesign.logo2} alt="Logo 2" style={{ height: "80px", objectFit: "contain" }} />
+                    </Col>
+                  )}
+                  {certificateDesign.logo3 && (
+                    <Col xs="4">
+                      <img src={certificateDesign.logo3} alt="Logo 3" style={{ height: "80px", objectFit: "contain" }} />
+                    </Col>
+                  )}
+                </Row>
+
+                {/* Certificate Title */}
+                <Row
+                  style={{
+                    width: "90%",
+                    textAlign: "center",
+                    fontSize: "80px",
+                    fontWeight: certificateDesign.titleFontWeight || "bold",
+                    fontFamily: certificateDesign.titleFontFamily || "'Arial', sans-serif",
+                    color: certificateDesign.titleColor || "#000000",
+                    marginBottom: "-40px",
+                    marginTop: "30px",
+                  }}
+                >
+                  <Col>{certificateDesign.certificateTitle || "CERTIFICATE"}</Col>
+                </Row>
+
+                {/* Certificate Subtitle */}
+                <Row
+                  style={{
+                    width: "90%",
+                    textAlign: "center",
+                    fontSize: certificateDesign.subtitleFontSize || "32px",
+                    fontFamily: certificateDesign.subtitleFontFamily || "'Georgia', serif",
+                    color: certificateDesign.subtitleColor || "#333333",
+                    marginBottom: "-50px",
+                  }}
+                >
+                  <Col>{certificateDesign.certificateSubtitle || "Of Completion"}</Col>
+                </Row>
+
+                {/* Presented To Text */}
+                <Row
+                  style={{
+                    width: "90%",
+                    textAlign: "center",
+                    fontSize:  "30px",
+                    fontFamily: certificateDesign.presentedToFontFamily || "'Georgia', serif",
+                    color: certificateDesign.presentedToColor || "#333333",
+                    marginBottom: "-50px",
+                    marginTop: "30px",
+                  }}
+                >
+                  <Col>{certificateDesign.presentedToText || "This certificate is presented to:"}</Col>
+                </Row>
+
+                {/* Name */}
+                <Row
+                  style={{
+                    width: "90%",
+                    textAlign: "center",
+                    fontSize: certificateDesign.nameFontSize || "80px",
+                    fontWeight: certificateDesign.nameFontWeight || "bold",
+                    fontFamily: certificateDesign.nameFontFamily || "'Imperial Script'",
+                    letterSpacing: certificateDesign.nameLetterSpacing || "2px",
+                    color: certificateDesign.nameColor || "#cfaa51",
+                    marginTop: "25px",
+                    marginBottom: "-20px",
+                  }}
+                >
+                  <Col>
                     {newCertificate.firstName} &nbsp;
                     {newCertificate.middleName?.substring(0, 1)}
                     {newCertificate.middleName && ". "}
                     {newCertificate.lastName}
                   </Col>
                 </Row>
+
+                {/* Text Block */}
                 <Row
                   style={{
-                    height: "115px",
-                    fontSize: "20px",
                     width: "90%",
-                    margin: "auto",
                     textAlign: "center",
-                    letterSpacing: "1px",
+                    fontSize: certificateDesign.textBlockFontSize || "20px",
+                    fontFamily: certificateDesign.textBlockFontFamily || "'Georgia', serif",
+                    letterSpacing: certificateDesign.textBlockLetterSpacing || "1px",
+                    color: certificateDesign.textBlockColor || "#000000",
+                    marginBottom: "10px",
+                    lineHeight: "1.6",
                   }}
                 >
                   <Col>
@@ -277,28 +434,34 @@ export const CertificateComponent: React.FC<CountCardProps> = ({
                     of {newCertificate.courseTitle} Course
                   </Col>
                 </Row>
+
+                {/* Signatures */}
                 <Row
                   style={{
-                    height: "20px",
-                    fontWeight: "bold",
-                    fontSize: "20px",
                     width: "90%",
-                    margin: "auto",
+                    margin: "0 auto",
+                    textAlign: "center",
+                    fontWeight: certificateDesign.signatureNameFontWeight || "bold",
+                    fontSize: certificateDesign.signatureNameFontSize || "20px",
+                    color: certificateDesign.signatureColor || "#000000",
+                    marginBottom: "-25px",
                   }}
                 >
-                  <Col xs="6">HON. MYLA B. CLARETE</Col>
-                  <Col xs="5">JOHN PAUL L. MARTINEZ EN.P</Col>
+                  <Col xs="6">{certificateDesign.leftSignatureName || "HON. MYLA B. CLARETE"}</Col>
+                  <Col xs="6">{certificateDesign.rightSignatureName || "JOHN PAUL L. MARTINEZ EN.P"}</Col>
                 </Row>
+
                 <Row
                   style={{
-                    height: "20px",
-                    fontSize: "16px",
                     width: "90%",
-                    margin: "auto",
+                    margin: "0 auto",
+                    textAlign: "center",
+                    fontSize: certificateDesign.signatureTitleFontSize || "16px",
+                    color: certificateDesign.signatureColor || "#000000",
                   }}
                 >
-                  <Col xs="6">ACTING MUNICIPAL MAYOR</Col>
-                  <Col xs="6">OIC - CTSDO</Col>
+                  <Col xs="6">{certificateDesign.leftSignatureTitle || "ACTING MUNICIPAL MAYOR"}</Col>
+                  <Col xs="6">{certificateDesign.rightSignatureTitle || "OIC - CTSDO"}</Col>
                 </Row>
               </div>
             </div>

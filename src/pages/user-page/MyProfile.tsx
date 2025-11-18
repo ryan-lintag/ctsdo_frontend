@@ -91,6 +91,21 @@ const MyProfile: React.FC = () => {
 
               <div className="col-md-4">
                 <div className="mb-3">
+                  <label htmlFor="userName" className="form-label">Username</label>
+                  <input
+                    type="text"
+                    name="userName"
+                    value={formData.userName}
+                    className="form-control"
+                    placeholder="userName"
+                    required
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="col-md-4">
+                <div className="mb-3">
                   <label htmlFor="dateOfBirth" className="form-label">Date of Birth</label>
                   <input
                     aria-label="dateOfBirth"

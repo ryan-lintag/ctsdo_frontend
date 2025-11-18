@@ -6,6 +6,7 @@ const USER_PROFILE_DEFAULT: UserProfile = {
     _id: '',
     email: '',
     role: '',
+    userName: '',
     firstName: '',
     middleName: '',
     lastName: '',

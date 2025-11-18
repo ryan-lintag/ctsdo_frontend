@@ -22,6 +22,7 @@ export type UserProfile = {
     firstName: string,
     middleName: string,
     lastName: string,
+    userName: string,
     dateOfBirth: Date,
     status?: number,
     // Portfolio fields

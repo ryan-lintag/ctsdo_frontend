@@ -8,7 +8,8 @@ import logo from '../../assets/images/logo.jpg';
 const LoginPage = () => {
   const userProfile = useUserStore((state) => state.userProfile);
   const setLoggedInUser = useUserStore((state) => state.setLoggedInUser);
-  const [email, setEmail] = useState<string>('');
+
+  const [identifier, setIdentifier] = useState<string>(''); // <-- unified email/username
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -28,14 +29,14 @@ const LoginPage = () => {
     setSuccess('');
 
     try {
-      const data = await postReq('/auth/login', { email, password }) as any;
+      // ✅ backend now expects { identifier, password }
+      const data = await postReq('/auth/login', { identifier, password }) as any;
 
-      setSuccess(`Welcome back, ${data.email}!`);
+      setSuccess(`Welcome back, ${data.username || data.email}!`);
       setLoggedInUser(data);
       navigate('/dashboard');
     } catch (err: any) {
-      // Determine error type
-      let errorMessage = 'Invalid email or password. Please check your credentials.';
+      let errorMessage = 'Invalid username/email or password.';
       if (err?.response?.status === 401) {
         errorMessage = 'Something went wrong. Please try again later.';
       } else if (err?.response?.data?.message) {
@@ -55,21 +56,25 @@ const LoginPage = () => {
           aria-label="Close"
         ></button>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '15px' }}>
-  {/* Image on the left */}
-  <img
-    src={logo}
-    alt="Login Icon"
-    style={{ width: '40px', height: '40px' }}
-  />
-  
-  {/* Heading text */}
-  <h3 className="mb-0">Login</h3>
-</div>
+        {/* Header with Logo */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            marginBottom: '15px',
+          }}
+        >
+          <img
+            src={logo}
+            alt="Login Icon"
+            style={{ width: '40px', height: '40px' }}
+          />
+          <h3 className="mb-0">Login</h3>
+        </div>
 
-
-
-        {/* Professional Error Notification */}
+        {/* Alerts */}
         {error && (
           <div className="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>⚠️ Error:</strong> {error}
@@ -77,7 +82,6 @@ const LoginPage = () => {
           </div>
         )}
 
-        {/* Success Notification */}
         {success && (
           <div className="alert alert-success alert-dismissible fade show" role="alert">
             <strong>✅ Success:</strong> {success}
@@ -86,18 +90,23 @@ const LoginPage = () => {
         )}
 
         <form onSubmit={handleLogin}>
+          {/* ✅ Single identifier input (for email or username) */}
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
+            <label htmlFor="identifier" className="form-label">
+              Email or Username
+            </label>
             <input
-              type="email"
+              type="text"
               className="form-control"
-              id="email"
-              value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              id="identifier"
+              placeholder="Enter your email or username"
+              value={identifier}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
               required
             />
           </div>
 
+          {/* Password Field */}
           <div className="mb-3 position-relative">
             <label htmlFor="password" className="form-label">Password</label>
             <div className="input-group">
@@ -120,11 +129,13 @@ const LoginPage = () => {
             </div>
           </div>
 
+          {/* Submit */}
           <button type="submit" className="btn btn-primary w-100 mt-3">
             Login
           </button>
         </form>
 
+        {/* Links */}
         <div className="d-flex justify-content-between mt-3">
           <button className="btn btn-link p-0" onClick={() => navigate('/signup')}>
             Sign Up

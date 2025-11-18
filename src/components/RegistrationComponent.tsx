@@ -168,6 +168,46 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     "Student",
     "Retired",
   ];
+  const educationalAttainmentOptions = [
+    "No Formal Education",
+    "Elementary Underraduate",
+    "Elementary Graduate",
+    "Junior High School Underraduate",
+    "Junior High School Graduate",
+    "Senior High School Underraduate",
+    "Senior High School Graduate",
+    "College Undergraduate",
+    "College Graduate",
+    "Bachelor's Degree",
+    "Master's Degree",
+    "Doctorate",
+  ];
+
+  const clientsClassificationOptions = [
+    "4ps Benificiary",
+    "Displaced Workers",
+    "Family Member of AFP and PNP Wounded in-Action",
+    "Industry Worker",
+    "Out of School Youth",
+    "Rebel Returnees",
+    "TESDA alumni",
+    "Victim of Natural Disaster and Calamities",
+    "Agraria Reform Beneficiary",
+    "Drug Dependents Surrendernees",
+    "Farmer and Fisherman",
+    "Inmates and Detainees",
+    "Overseas Filipino Worker (OFW)",
+    "Returning OFW",
+    "TVET Trainers",
+    "Wounded in Action  AFP & PNP Personnel",
+    "Balik Pobinsya",
+    "Indigenous People",
+    "MILF benificiary",
+    "RCEF-RESP",
+    "Student",
+    "Uniformed Personnel",
+    "Others"
+  ]
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -435,25 +475,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 </h5>
               </div>
               <Row>
-                <Form.Group controlId="formFileMultiple" className="mb-3">
-                  <Form.Label>ID Picture</Form.Label>
-                  {renderImagePreview(
-                    registration?.idPicture ?? null,
-                    "Current ID Picture"
-                  )}
-                  <Form.Control
-                    type="file"
-                    name="idPicture"
-                    accept="image/*"
-                    onChange={handleRegistrationInputChange}
-                  />
-                  {registration?.idPicture && (
-                    <small className="text-muted">
-                      Upload a new image to replace the current one
-                    </small>
-                  )}
-                </Form.Group>
-
                 <Accordion alwaysOpen>
                   <AccordionItemComponent
                     eventKey="0"
@@ -478,12 +499,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                               <h6>Entry Date</h6>
                             </div>
                             <Form.Control
-                              type="date"
-                              name="entryDate"
-                              value={newFormData.entryDate}
-                              min={new Date().toISOString().split("T")[0]}
-                              onChange={handleRegistrationInputChange}
-                            />
+  type="date"
+  name="entryDate"
+  value={newFormData.entryDate || new Date().toISOString().split("T")[0]}
+  min={new Date().toISOString().split("T")[0]}
+  onChange={handleRegistrationInputChange}
+/>
+
                           </Form.Group>
                         </Col>
                       </Row>
@@ -813,13 +835,18 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                         </div>
                         <Col md={6}>
                           <Form.Group className="mb-3">
-                            <Form.Label>Trainee</Form.Label>
-                            <Form.Control
-                              type="text"
+                            <Form.Select
                               name="educationalAttainment"
                               value={newFormData.educationalAttainment}
                               onChange={handleRegistrationInputChange}
-                            />
+                            >
+                              <option value="">--Select--</option>
+                              {educationalAttainmentOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </Form.Select>
                           </Form.Group>
                         </Col>
                         <div className="label">
@@ -849,62 +876,38 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             />
                           </Form.Group>
                         </Col>
-                      </Row>
-                    }
-                  />
-                  <AccordionItemComponent
-                    eventKey="3"
-                    header="Additional Information"
-                    children={
-                      <Row>
                         <div className="label">
                           <h6>Learner/Trainee/Student </h6>
                         </div>
                         <Col md={6}>
                           <Form.Group className="mb-3">
-                            <Form.Label>Classification</Form.Label>
-                            <Form.Control
-                              type="text"
+                            <Form.Select
                               name="classifications"
                               value={newFormData.classifications}
                               onChange={handleRegistrationInputChange}
-                            />
+                            >
+                            <option value="">--Select Classification--</option>
+                            {clientsClassificationOptions.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                            </Form.Select>
                           </Form.Group>
                         </Col>
                         <div className="label">
                           <h6>
-                            Type of Dissabilities (Only for Person with
-                            Dissabilities)
+                            If Scholar, What type of Scholarship Package (TSPW,
+                            PESFA, STEP, others?)
                           </h6>
                         </div>
                         <Col md={6}>
                           <Form.Group className="mb-3">
-                            <Form.Label>
-                              to be filled up by the TESDA personel
-                            </Form.Label>
+                            <Form.Label></Form.Label>
                             <Form.Control
                               type="text"
-                              name="disabilityType"
-                              value={newFormData.disabilityType}
-                              onChange={handleRegistrationInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <div className="label">
-                          <h6>
-                            Cause of Dissabilities (Only for Person with
-                            Dissabilities)
-                          </h6>
-                        </div>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>
-                              to be filled up by the TESDA personel
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="disabilityCause"
-                              value={newFormData.disabilityCause}
+                              name="scholarshipType"
+                              value={newFormData.scholarshipType}
                               onChange={handleRegistrationInputChange}
                             />
                           </Form.Group>
@@ -933,24 +936,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             </Form.Select>
                           </Form.Group>
                         </Col>
-                        <div className="label">
-                          <h6>
-                            If Scholar, What type of Scholarship Package (TSPW,
-                            PESFA, STEP, others?)
-                          </h6>
-                        </div>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label></Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="scholarshipType"
-                              value={newFormData.scholarshipType}
-                              onChange={handleRegistrationInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
                       </Row>
+                      
                     }
                   />
                   <AccordionItemComponent
@@ -964,6 +951,25 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             is true and correct.
                           </h5>
                         </div>
+
+                        <Form.Group controlId="formFileMultiple" className="mb-3">
+                  <Form.Label>ID Picture</Form.Label>
+                  {renderImagePreview(
+                    registration?.idPicture ?? null,
+                    "Current ID Picture"
+                  )}
+                  <Form.Control
+                    type="file"
+                    name="idPicture"
+                    accept="image/*"
+                    onChange={handleRegistrationInputChange}
+                  />
+                  {registration?.idPicture && (
+                    <small className="text-muted">
+                      Upload a new image to replace the current one
+                    </small>
+                  )}
+                </Form.Group>
 
                         <Form.Group
                           controlId="applicantSignature"
@@ -1035,8 +1041,48 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             </small>
                           )}
                         </Form.Group>
-
-                        <Form.Group
+                      </Row>
+                    }
+                  />
+                  <AccordionItemComponent
+                    eventKey="3"
+                    header="to be filled up by the TESDA personel"
+                    children={
+                      <Row>
+                        
+                        <div className="label">
+                          <h6>
+                            Type of Dissabilities (Only for Person with
+                            Dissabilities)
+                          </h6>
+                        </div>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Control
+                              type="text"
+                              name="disabilityType"
+                              value={newFormData.disabilityType}
+                              onChange={handleRegistrationInputChange}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <div className="label">
+                          <h6>
+                            Cause of Dissabilities (Only for Person with
+                            Dissabilities)
+                          </h6>
+                        </div>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Control
+                              type="text"
+                              name="disabilityCause"
+                              value={newFormData.disabilityCause}
+                              onChange={handleRegistrationInputChange}
+                            />
+                          </Form.Group>
+                        </Col>
+                                                <Form.Group
                           controlId="registrarSignature"
                           className="mb-3"
                         >
@@ -1059,7 +1105,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                           )}
                         </Form.Group>
 
-                        <Col md={6}>
+                         <Col md={6}>
                           <Form.Group className="mb-3">
                             <Form.Label>Date Received</Form.Label>
                             <Form.Control
@@ -1070,6 +1116,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             />
                           </Form.Group>
                         </Col>
+                        
                       </Row>
                     }
                   />

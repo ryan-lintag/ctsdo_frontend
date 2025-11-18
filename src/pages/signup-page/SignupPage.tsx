@@ -4,8 +4,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { postReq } from '../../lib/axios';
 
 interface FormData {
+  userName: string;
   email: string;
   password: string;
+  confirmPassword: string;
   role: 'applicant' | 'admin';
   firstName: string;
   middleName: string;
@@ -15,8 +17,10 @@ interface FormData {
 
 const Register = () => {
   const [formData, setFormData] = useState<FormData>({
+    userName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'applicant',
     firstName: '',
     middleName: '',
@@ -35,19 +39,26 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setMessage('');
-    setError('');
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  setMessage('');
+  setError('');
 
-    try {
-      const data = await postReq('/auth/register', formData) as any;
-      setMessage(data.message || 'Verification email sent.');
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.message || 'Registration failed';
-      setError(errorMsg);
-    }
-  };
+  // ✅ Local password confirmation check
+  if (formData.password !== formData.confirmPassword) {
+    setError('Passwords do not match');
+    return;
+  }
+
+  try {
+    const data = await postReq('/auth/register', formData) as any;
+    setMessage(data.message || 'Verification email sent.');
+  } catch (err: any) {
+    const errorMsg = err.response?.data?.message || 'Registration failed';
+    setError(errorMsg);
+  }
+};
+
 
   return (
     <div className="container d-flex justify-content-center align-items-center mt-5">
@@ -115,6 +126,21 @@ const Register = () => {
             </div>
 
             <div className="col-md-4">
+  <div className="mb-3">
+    <label htmlFor="userName" className="form-label">Username</label>
+    <input
+      type="text"
+      name="userName"
+      className="form-control"
+      placeholder="Username"
+      required
+      onChange={handleChange}
+    />
+  </div>
+</div>
+
+
+            <div className="col-md-4">
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">Email</label>
                 <input
@@ -122,20 +148,6 @@ const Register = () => {
                   name="email"
                   className="form-control"
                   placeholder="Email"
-                  required
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="col-md-4">
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  className="form-control"
-                  placeholder="Password"
                   required
                   onChange={handleChange}
                 />
@@ -158,6 +170,37 @@ const Register = () => {
             </div>
           </div>
 
+
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  className="form-control"
+                  placeholder="Password"
+                  required
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-4">
+  <div className="mb-3">
+    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+    <input
+      type="password"
+      name="confirmPassword"
+      className="form-control"
+      placeholder="Confirm Password"
+      required
+      onChange={handleChange}
+    />
+  </div>
+</div>
+
+
+            
           <button type="submit" className="btn btn-primary w-100 mt-3">
             Submit
           </button>
